@@ -9,21 +9,16 @@ This is the documentation for the soft robotic setup. The robot is powerered wit
   - [Enclosure Assembly](#enclosure-assembly)
 - [Software](#software)
   - [Installation](#installation)
-
-
-- [Software](#software)
-  - [Initial setup](#initial-setup)
-    - [Set up Raspberry Pi OS, network and I2C](#set-up-raspberry-pi-os-network-and-i2c)
-  - [Python script](#python-script)
-    - [First layer](#first-layer)
-    - [Second layer](#second-layer)
-      - [Add sensors (for instance, a MPRLS pressure sensor)](#add-sensors-for-instance-a-mprls-pressure-sensor)
-    - [Third layer](#third-layer)
-  - [Matlab and Simulink](#matlab-and-simulink)
-- [Examples](#examples)
-  - [Simple send and receive](#simple-send-and-receive)
-  - [Feedforward and feedback control](#feedforward-and-feedback-control)
-  - [Interface with Unity](#interface-with-unity)
+    - [Initial Raspberry Pi Setup](#initial-raspberry-pi-setup)
+    - [Necessary Python Scripts](#necessary-python-scripts)
+    - [Matlab and Simulink Integration](#matlab-and-simulink-integration)
+  - [Usage](#usage)
+    - [Raspberry Pi Operation](#raspberry-pi-operation)
+    - [Python](#python-code)
+    - [Matlab and Simulink](#matlab-and-simulink)
+  - [Additional Functionality](#additional-functionality)
+    - [Unity Integration](#unity-integration)
+    - [Additional Sensor Integration](#additional-sensor-integration)
 
 
 # Hardware
