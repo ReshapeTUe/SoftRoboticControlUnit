@@ -56,8 +56,6 @@ The enclosure makes the setup a nice square box. The CAD files are provided in t
 ## Installation
 
 ### Initial Raspberry Pi Setup
-Before use, the SD card of the Pi must be set up.
-
 1. Download the latest Raspbian OS from [Raspberry Pi Homepage](https://www.raspberrypi.org/software/) (You can skip this step if you use [Raspberry Pi Imager](https://www.raspberrypi.org/software/))
 1. Write the image on a microSD card ([Raspberry Pi Imager](https://www.raspberrypi.org/software/) or [Balena Etcher](https://www.balena.io/etcher/) is recommended for this task)
 1. Prepare for the Raspberry Pi's first boot
@@ -71,9 +69,9 @@ Before use, the SD card of the Pi must be set up.
         dtoverlay=i2c4
         dtoverlay=i2c3
         ```
+1. During first startup, create an account on the Pi. For purposes of this documentation, `user` is used as the username.     
 1. In case you have a router that connects to the Pi and your host PC
     1. Once powered up, connect the Raspberry pi using the ethernet cable to the router. 
-    I think this step is unnecessary because we don't need to know the IP of the host PC
     1. **On the host PC**, open a terminal and check the IP address of the ethernet connection using `ifconfig` (for Linux/OSX) or `ipconfig` (Windows). Look for the line `eth0` or `enp5s0` or something similar and note the corresponding IP address (for example `192.168.1.123`). This is the IP address of the host PC.
     1. Find the IP address of the Pi by running `ifconfig` on the Pi's terminal. Look for the IP address with the same leading 3 triple digits (for example `192.168.1.321`). This is the IP address of the Pi. Now the Pi is accessible via SSH on this IP address.
     
@@ -85,12 +83,12 @@ Before use, the SD card of the Pi must be set up.
             interface eth0
                 static ip_address=192.168.4.1/24
             ```
-        3. Backup `/etc/dnsmasq.conf` and create a new file
+        3. Backup `/etc/dnsmasq.conf` and create a new file by typing:
             ```dotnetcli
             sudo mv /etc/dnsmasq.conf /etc/dnsmasq.conf.orig
             sudo nano /etc/dnsmasq.conf
             ```
-        4. Add to the new file
+        4. Add to the end of `/etc/dnsmasq.conf`
             ```
             interface=eth0 # Listening interface
             dhcp-range=192.168.4.2,192.168.4.20,255.255.255.0,24h
@@ -100,8 +98,7 @@ Before use, the SD card of the Pi must be set up.
                         # Alias for this router
             ```
         5. Restart the services with `sudo systemctl reboot`
-        1. Make sure the Ethernet adapter on your host PC is not static (normally it is not static if you have not deliberately chosen that setting). Plug an Ethernet cable to the ports on the Pi and your host PC. The host PC will be automatically assigned an IP address in the range `192.168.4.2-20` The Pi is accessible at either `server.softrobot` or `192.168.4.1`.
-
+        1. Make sure the Ethernet adapter on your host PC is dynamic. Plug an Ethernet cable to the ports on the Pi and your host PC. The host PC will be automatically assigned an IP address in the range `192.168.4.2-20` The Pi is accessible at either `server.softrobot` or `192.168.4.1`. Note, by default, the Ethernet adapter port is dynamic, but be sure to double check.
 
 ### Python Scripts
 
