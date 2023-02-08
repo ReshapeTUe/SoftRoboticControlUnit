@@ -24,42 +24,7 @@ This is the documentation for the soft robotic setup. The robot is powerered wit
 # Hardware
 
 ## Component List
-
-## Electronic Hardware Assembly
-
-## Enclosure Assembly
-
-
-
-# Software
-
-## Installation
-### Initial Raspberry Pi Setup
-
-### Python Scripts
-
-### Matlab and Simulink
-
-
-## Usage
-
-  ### Raspberry Pi 
-  
-  ### Python
-  
-  
-  ### Matlab
-  
-## Additional Functionality
-
-  ### Unity
-  
-  ### Additional Sensors
-
-
-# Hardware
 The setup has some commercially available and some custom-made componenets. Below is the list of the components for one setup with two Festo regulators:
-
 1. 1x Raspberry Pi 4 (*or any different model*)
 2. 1x Raspberry Pi compatible power supply
 3. 1x MicroSD card
@@ -72,23 +37,7 @@ The setup has some commercially available and some custom-made componenets. Belo
 10. 1x Vacuum pump
 11. Tubes and cables
 
-
-## VEAB control board
-The VEAB control board has two analog-to-digital converters and two digital-to-analog converters to control the Festo regulators and to read the internal sensor of the regulators. The fabrication of the board is documented in a separate file in the `hardware` folder. 
-The VEAB board is the intermediary between the Pi and the Festo regulators. The VEAB control board uses I2C to communicate with the Raspberry Pi. It can be either on top of the Pi or connected to the Pi via a QWIIC cable. The two four-pin ports in the middle of the board should be connected to Festo cables with a female end. The two-pin port next to the Festo ports is the 12V power supply port.
-
-![Alt text](/hardware/img/0_board.png?raw=true "VEAB controller hat")
-
-(To write: Color code for Festo cable)
-
-## QWIIC I2C extender HAT
-The QWIIC I2C extender HAT allows the use of additional I2C channels of the Raspberry Pi 4. By default, only one channel can be enabled, however, with the HAT, six channels can be used simultaneously. In other words, six I2C devices with the same address can be attached to the setup without having the problem of address conflicts.
-
-
-## Enclosure
-The enclosure makes the setup a nice square box. The CAD files are provided in the `hardware/enclosure` folder
-
-## Assembly guide
+## Electronic Hardware Assembly
 (Add pictures) For a minimal working setup:
 
 1. Stack the VEAB control board on top of the Raspberry Pi
@@ -98,13 +47,17 @@ The enclosure makes the setup a nice square box. The CAD files are provided in t
 5. Power on the Pi by plugging in the Pi's power supply
 6. Power on the whole system by turning on the 12V power supply
 
+## Enclosure Assembly
+The enclosure makes the setup a nice square box. The CAD files are provided in the `hardware/enclosure` folder
+
 
 # Software
-The software, written in Python (Pi side) and Matlab/Simulink (PC side) is documented in this section.
-## Initial setup
+
+## Installation
+
+### Initial Raspberry Pi Setup
 Before use, the SD card of the Pi must be set up.
 
-### Set up Raspberry Pi OS, network and I2C
 1. Download the latest Raspbian OS from [Raspberry Pi Homepage](https://www.raspberrypi.org/software/) (You can skip this step if you use [Raspberry Pi Imager](https://www.raspberrypi.org/software/))
 1. Write the image on a microSD card ([Raspberry Pi Imager](https://www.raspberrypi.org/software/) or [Balena Etcher](https://www.balena.io/etcher/) is recommended for this task)
 1. Prepare for the Raspberry Pi's first boot
@@ -148,6 +101,49 @@ Before use, the SD card of the Pi must be set up.
             ```
         5. Restart the services with `sudo systemctl reboot`
         1. Make sure the Ethernet adapter on your host PC is not static (normally it is not static if you have not deliberately chosen that setting). Plug an Ethernet cable to the ports on the Pi and your host PC. The host PC will be automatically assigned an IP address in the range `192.168.4.2-20` The Pi is accessible at either `server.softrobot` or `192.168.4.1`.
+
+
+### Python Scripts
+
+### Matlab and Simulink
+
+
+## Usage
+
+  ### Raspberry Pi 
+  
+  ### Python
+  
+  
+  ### Matlab
+  
+## Additional Functionality
+
+  ### Unity
+  
+  ### Additional Sensors
+
+
+
+
+## VEAB control board
+The VEAB control board has two analog-to-digital converters and two digital-to-analog converters to control the Festo regulators and to read the internal sensor of the regulators. The fabrication of the board is documented in a separate file in the `hardware` folder. 
+The VEAB board is the intermediary between the Pi and the Festo regulators. The VEAB control board uses I2C to communicate with the Raspberry Pi. It can be either on top of the Pi or connected to the Pi via a QWIIC cable. The two four-pin ports in the middle of the board should be connected to Festo cables with a female end. The two-pin port next to the Festo ports is the 12V power supply port.
+
+![Alt text](/hardware/img/0_board.png?raw=true "VEAB controller hat")
+
+(To write: Color code for Festo cable)
+
+## QWIIC I2C extender HAT
+The QWIIC I2C extender HAT allows the use of additional I2C channels of the Raspberry Pi 4. By default, only one channel can be enabled, however, with the HAT, six channels can be used simultaneously. In other words, six I2C devices with the same address can be attached to the setup without having the problem of address conflicts.
+
+
+
+
+
+# Software
+The software, written in Python (Pi side) and Matlab/Simulink (PC side) is documented in this section.
+
 ## Python script
 The main software of the setup, written in Python, is designed in three layers to optimize for speed, convenience, and versatility. The setup can read multiple sensors and control several VEAB regulators simultaneously, as well as communicate with other devices via TCP/IP.
 
