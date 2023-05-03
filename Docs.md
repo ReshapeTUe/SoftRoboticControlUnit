@@ -69,10 +69,10 @@ The enclosure makes the setup a nice square box. The CAD files are provided in t
         dtoverlay=i2c4
         dtoverlay=i2c3
         ```
-1. During first startup, create an account on the Pi. For purposes of this documentation, `user` is used as the username.     
+1. During first startup, create an account on the Pi. For purposes of this documentation, `user` is used as the username and `password` as password.     
 1. In case you have a router that connects to the Pi and your host PC
     1. Once powered up, connect the Raspberry pi using the ethernet cable to the router. 
-    1. **On the host PC**, open a terminal and check the IP address of the ethernet connection using `ifconfig` (for Linux/OSX) or `ipconfig` (Windows). Look for the line `eth0` or `enp5s0` or something similar and note the corresponding IP address (for example `192.168.1.123`). This is the IP address of the host PC.
+    1. **On the host PC**, open a terminal and check the IP address of the ethernet connection by typing `ifconfig` (for Linux/OSX) or `ipconfig` (Windows) into the command terminal. Look for the line `eth0` or `enp5s0` or something similar and note the corresponding IP address (for example `192.168.1.123`). This is the IP address of the host PC.
     1. Find the IP address of the Pi by running `ifconfig` on the Pi's terminal. Look for the IP address with the same leading 3 triple digits (for example `192.168.1.321`). This is the IP address of the Pi. Now the Pi is accessible via SSH on this IP address.
     
 1. (**Skip this step if you have a router or if you already established a connection to the Pi**) In case you do not have a router and need to connect the Pi and the host PC **directly** using an ethernet cable 
@@ -98,9 +98,75 @@ The enclosure makes the setup a nice square box. The CAD files are provided in t
                         # Alias for this router
             ```
         5. Restart the services with `sudo systemctl reboot`
-        1. Make sure the Ethernet adapter on your host PC is dynamic. Plug an Ethernet cable to the ports on the Pi and your host PC. The host PC will be automatically assigned an IP address in the range `192.168.4.2-20` The Pi is accessible at either `server.softrobot` or `192.168.4.1`. Note, by default, the Ethernet adapter port is dynamic, but be sure to double check.
+        1. Make sure the Ethernet adapter on your host PC is **not** static. Plug an Ethernet cable to the ports on the Pi and your host PC. The host PC will be automatically assigned an IP address in the range `192.168.4.2-20` The Pi is accessible at either `server.softrobot` or `192.168.4.1`. Note, by default, the Ethernet adapter port is dynamic, but be sure to double check. 
+          
+          
+### Additional Installations
+Before using any of the python scripts, it is important to install the necessary python packages. After logging into the raspberry pi, type the following lines:
+
+```
+**sudo pip3 install** adafruit-extended-bus
+**sudo pip3 install** adafruit-circuitpython-ads1x15
+**sudo pip3 install** adafruit-circuitpython-mcp4725
+```
+
+Furthermore, before using any of the Simulink/MATLAB files that work with the setup, be sure to install the [Psych Toolbox-3](http://psychtoolbox.org/download.html) first.
+          
+          
+### Operation
+
+To move files securely to the raspberry pi, the following command can be used:
+
+```
+**scp** /path_to_file_to_be_moved/ user@192.168.4.1:/destination_folder/
+```
+Use this to move the files from `/software/src/Raspberry Pi/` into a desired folder.
+Furthermore, to login to the raspberry pi through ssh, the following command can be used:
+
+```
+**ssh** user@192.168.4.1
+```
+This will prompt you to use the password defined during setup. To initialize the setup to receive MATLAB commands, while having the command window open in the folder containing the files from `software/src/Raspberry Pi/` type:
+
+``` 
+python3 runrobot_Festo.py -i <[I2C channels]> -p <Port>
+```
+Where I2C channels are the channels to which the VEAB boards are connected. The order of the channels is determines the numbering of sensors & actuators. Sensors and actuators come in pairs, and are counted sequentially:
+`Channel1VEAB1 -> Channel1VEAB2 -> Channel2VEAB1 -> Channel2VEAB2 -> ...`
+
+The Port is the port that the TCP/IP uses and must be configured the same in the Simulink/MATLAB code as the used command.
+
+
+An example of calling this function for the first VEAB connector attached to I2C channels 1 and 2 to port 12345 would be:
+``` 
+python3 runrobot_Festo.py -i 1,3 -p 12345
+```
+
+The general workflow of an experiment is as follows:
+
+To perform an experiment:
+1. Plug in the Pi and the power supply
+2. Connect to the pi, by logging in through ssh
+3. Enter the directory where your code is located through the `cd` command
+4. Run `runrobot_Festo.py` as indicated above
+5. Run the Simulink/MATLAB file
+
+After experiments:
+1. Turn of the Pi using `sudo poweroff`
+2. Unplug all power supplies
+
+Additionally, for troubleshooting purposes, one can always check the available VEAB channels attached to an I2C channel by using:
+``` 
+sudo i2cdetect -y <[I2C channel]>
+```
+For example:
+``` 
+sudo i2cdetect -y 1
+```
 
 ### Python Scripts
+The main software of the setup is written in python and is designed in three layers to optimize for speed, convenience, and versatility. The setup van read multiple sensors and control several VEAB regulators simultaneously, as well as communicate with other devices via TCP/IP. 
+
 
 ### Matlab and Simulink
 
