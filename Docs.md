@@ -10,8 +10,7 @@ This is the documentation for the soft robotic setup. The robot is powerered wit
 - [Software](#software)
   - [Installation](#installation)
     - [Initial Raspberry Pi Setup](#initial-raspberry-pi-setup)
-    - [Necessary Python Scripts](#necessary-python-scripts)
-    - [Matlab and Simulink Integration](#matlab-and-simulink-integration)
+    - [Additional Installations](#additional-installations)
   - [Usage](#usage)
     - [Raspberry Pi Operation](#raspberry-pi-operation)
     - [Python](#python-code)
@@ -31,7 +30,7 @@ The setup has some commercially available and some custom-made componenets. Belo
 4. 1x [QWIIC I2C extender HAT](#qwiic-i2c-extender-hat) (*optional*)
 5. 1x [VEAB control board](#veab-control-board)
 6. 1x 12V power supply
-7. 1x [Enclosure](#enclosure) (*optional*)
+7. 1x 3D-printed Enclosure (*optional* found in `/hardware/enclosure/`)
 8. 2x Festo regulators
 9. 1x Air compressor
 10. 1x Vacuum pump
@@ -48,7 +47,7 @@ The setup has some commercially available and some custom-made componenets. Belo
 6. Power on the whole system by turning on the 12V power supply
 
 ## Enclosure Assembly
-The enclosure makes the setup a nice square box. The CAD files are provided in the `hardware/enclosure` folder
+The enclosure makes the setup a nice square box. The CAD files are provided in the `hardware/enclosure/` folder
 
 
 # Software
@@ -110,11 +109,10 @@ Before using any of the python scripts, it is important to install the necessary
 **sudo pip3 install** adafruit-circuitpython-mcp4725
 ```
 
-Furthermore, before using any of the Simulink/MATLAB files that work with the setup, be sure to install the [Psych Toolbox-3](http://psychtoolbox.org/download.html) first.
-          
-          
-### Operation
-
+Furthermore, before using any of the Simulink/MATLAB files that work with the setup, be sure to install the [Psych Toolbox-3](http://psychtoolbox.org/download.html) first.          
+         
+         
+## Usage
 To move files securely to the raspberry pi, the following command can be used:
 
 ```
@@ -164,56 +162,40 @@ For example:
 sudo i2cdetect -y 1
 ```
 
-### Python Scripts
-The main software of the setup is written in python and is designed in three layers to optimize for speed, convenience, and versatility. The setup van read multiple sensors and control several VEAB regulators simultaneously, as well as communicate with other devices via TCP/IP. 
-
-
-### Matlab and Simulink
-
-
-## Usage
-
-  ### Raspberry Pi 
-  
-  ### Python
-  
-  
-  ### Matlab
-  
-## Additional Functionality
-
-  ### Unity
-  
-  ### Additional Sensors
+# Hardware Assembly
 
 
 
+1. Assemble the base and side plates, the Pi with the I2C hat and the power supply
+   ![](img/Assembly/Assembly1.jpg "Step 1")
+1. Fix the VEAB Controller hat on the holding plate
+   ![](img/Assembly/Assembly2.jpg "Step 2")
+1. Slide the holding plate into the designated space, fix the holding board to the side plates
+   ![](img/Assembly/Assembly3.jpg "Step 3")
+2. Enclose the setup with the remaining plates
+   ![](img/Assembly/Assembly4.jpg "Step 4")
 
-## VEAB control board
-The VEAB control board has two analog-to-digital converters and two digital-to-analog converters to control the Festo regulators and to read the internal sensor of the regulators. The fabrication of the board is documented in a separate file in the `hardware` folder. 
-The VEAB board is the intermediary between the Pi and the Festo regulators. The VEAB control board uses I2C to communicate with the Raspberry Pi. It can be either on top of the Pi or connected to the Pi via a QWIIC cable. The two four-pin ports in the middle of the board should be connected to Festo cables with a female end. The two-pin port next to the Festo ports is the 12V power supply port.
 
-![Alt text](/hardware/img/0_board.png?raw=true "VEAB controller hat")
-
-(To write: Color code for Festo cable)
-
+# Hardware Documentation 
 ## QWIIC I2C extender HAT
 The QWIIC I2C extender HAT allows the use of additional I2C channels of the Raspberry Pi 4. By default, only one channel can be enabled, however, with the HAT, six channels can be used simultaneously. In other words, six I2C devices with the same address can be attached to the setup without having the problem of address conflicts.
 
+## VEAB control board
+The VEAB control board has two analog-to-digital converters and two digital-to-analog converters to control the Festo regulators and to read the internal sensor of the regulators. The fabrication of the board is documented in a separate file in the `hardware` folder. 
+The VEAB board is the intermediary between the Pi and the Festo regulators. The VEAB control board uses I2C to communicate with the Raspberry Pi. It can be either on top of the Pi or connected to the Pi via a QWIIC cable. The two four-pin ports in the middle of the board should be connected to Festo cables with a female end. The two-pin port next to the Festo ports is the 12V power supply port. A guide to reproduce the VEAB control board can be found in `/hardware/Hardware.md`
 
+# Software Documentation
 
+## Python
 
-
-# Software
-The software, written in Python (Pi side) and Matlab/Simulink (PC side) is documented in this section.
-
-## Python script
-The main software of the setup, written in Python, is designed in three layers to optimize for speed, convenience, and versatility. The setup can read multiple sensors and control several VEAB regulators simultaneously, as well as communicate with other devices via TCP/IP.
+The main software of the setup is written in python and is designed in three layers to optimize for speed, convenience, and versatility. The setup van read multiple sensors and control several VEAB regulators simultaneously, as well as communicate with other devices via TCP/IP. 
 
 ### First layer
 The first layer of the software provides two base classes: `baseSoftRobot.py` and `baseSensor.py`. The class `baseSoftRobot.py` sets up the multi-processing environment that handles the TCP/IP communication for the array of VEAB regulators and sensors. Multi-processing is used here to process data in parallel, improving not only the speed of the system but also the timing precision. The class `baseSensor.py` serves as a wrapper for other sensor classes. Both classes act as parents for other classes in the next layer.
 
 The `baseSoftRobot` class has several functions to set up the TCP communication. The `__init__` function initializes the internal variables that the TCP communication uses. The `repeatedlySend` and `receive` functions are for continuously exchanging data, and they are called automatically in the `createProcesses` function. To run the processes, one needs to explicitly call the `run` function. After `run` is called, the Python interpreter will execute the next command, thus to prevent Python from exitting, one should call `waitForProcesses`.
+
+
 ### Second layer
 The second layer facilitates all communication between the Raspberry Pi and the VEAB control board and/or other sensors. First, necessary libraries are imported. Next, sensor classes are written as children of the `baseSensor.py` class, and in each sensor class, a function called `ReadSensor` must be implemented when using sensors. Finally, the class `SoftRobot`, inheriting all functions of `baseSoftRobot.py`, is assembled from all software parts relating to the TCP/IP communication, regulators, and sensors. To some extent, the class `SoftRobot` acts as the main class of the software architecture that encompasses the user's requirement.
 
@@ -256,12 +238,26 @@ The script initializes the SoftRobot object and runs the required methods. An ex
    ```
 
 ## Matlab and Simulink
-Please see `software/MatlabSimulink` for more details.
 
-# Examples
+### Without Unity
 
-## Simple send and receive
+`mainSimulink.slx` is the main simulink file for the model to be run in order to obtain the feedback (measurements), compute the control input to the system and send the control input to the Pi.
 
-## Feedforward and feedback control
+The important parameters are:
+1. The `Remote address` of the TCP/IP Send and TCP/IP Receive blocks: should be the IP address of the Pi
+2. The variables in the workspace (`Modelling/Model Explorer/mainSimulink/Model Workspace`), including:
+   
+   1. `controllerFile`: The name of the Simulink file containing the controller (without ".slx")
+   2. `samplingFreq`: the frequency at which the sensors are sampled
+   3. `TCPport`: the port opened by the server
+   4. `dataSize`: the number of data (doubles) that the server sends as feedback
+  
+The controller file is a Simulink subsystem having two inputs ("reference and feedback") and one output ("control input"). Other blocks and functions can be placed between the inputs and the output.
 
-## Interface with Unity
+The dimension of the signal "feedback" is the same as `datasize` which must be 2*(No. of VEAB boards), while the dimension of the signal "control input" must be identical to the number of data (in doubles) that the TCP server expects. Please see `controller_template` for an example of 3x1 feedback, 3x1 control input.
+
+
+### With Unity
+Simply copy the all the blocks for Unity support and link the output port to the input "reference" of the controller subsystem.
+
+
