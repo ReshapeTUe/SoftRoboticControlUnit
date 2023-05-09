@@ -4,7 +4,7 @@ This is the documentation for a platform used for real-time control of pneumatic
 ## Table of Contents
 
 - [Publication](#publication)
-- [Changelog](#Changelog)
+- [Changelog](#changelog)
 - [Hardware](#hardware)
   - [Component List](#component-list)
   - [Electronic Hardware Assembly](#electronic-hardware-assembly)
@@ -88,7 +88,7 @@ The enclosure makes the setup a nice square box. The CAD files are provided in t
 1. Download the latest Raspbian OS from [Raspberry Pi Homepage](https://www.raspberrypi.org/software/) (You can skip this step if you use [Raspberry Pi Imager](https://www.raspberrypi.org/software/))
 1. Write the image on a microSD card ([Raspberry Pi Imager](https://www.raspberrypi.org/software/) or [Balena Etcher](https://www.balena.io/etcher/) is recommended for this task)
 1. Prepare for the Raspberry Pi's first boot
-    1. SSH: create an empty file named `ssh` in the `boot` directory (this will enable SSH upon initial boot and the file will be automatically removed afterwards).
+    1. SSH: create an empty file named `ssh` in the `boot` directory. **Note, this file has no extension and it will enable SSH upon initial boot and the file will be automatically removed afterwards**
     1. Enable I2C fast mode: Add the following line to `/boot/config.txt`: 
         ```
         dtparam=i2c_arm=on,i2c_arm_baudrate=400000
@@ -97,8 +97,8 @@ The enclosure makes the setup a nice square box. The CAD files are provided in t
         dtoverlay=i2c5
         dtoverlay=i2c4
         dtoverlay=i2c3
-        ```
-1. During first startup, create an account on the Pi. For purposes of this documentation, `user` is used as the username and `password` as password.     
+        ```    
+1. During first startup, create an account on the Pi. For purposes of this documentation, `user` is used as the username and `password` as password. 
 1. To connect the Pi to your host PC:	
     1. In case you have a router that connects to the Pi and your host PC
         1. Once powered up, connect the Raspberry pi using the ethernet cable to the router. 
