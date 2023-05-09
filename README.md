@@ -108,16 +108,19 @@ The enclosure makes the setup a nice square box. The CAD files are provided in t
     2. In case you do not have a router and need to connect the Pi and the host PC **directly** using an ethernet cable, configure the Raspberry Pi as a DHCP server (can be done via SSH or with a monitor and a keyboard attached to the Pi)
         1. Make sure the Pi has a working internet connection. Install `dnsmasq` by executing `sudo apt install dnsmasq`
         2. Assign a static IP address to the Pi's Ethernet `eth0` by adding these lines to the file `/etc/dhcpcd.conf`	
-            ```
+            
+	    ```
 	    interface eth0
             static ip_address=192.168.4.1/24
 	    ```		
         1. Backup `/etc/dnsmasq.conf` and create a new file by typing:
+	    
 	    ```
             sudo mv /etc/dnsmasq.conf /etc/dnsmasq.conf.orig
             sudo nano /etc/dnsmasq.conf
             ```
         1. Add to the end of `/etc/dnsmasq.conf`
+	    
 	    ```
             	interface=eth0 # Listening interface
             	dhcp-range=192.168.4.2,192.168.4.20,255.255.255.0,24h
@@ -125,7 +128,7 @@ The enclosure makes the setup a nice square box. The CAD files are provided in t
             	domain=softrobot     # Local wireless DNS domain
             	address=/server.softrobot/192.168.4.1
                 # Alias for this router
-            	```	
+            ```	
         1. Restart the services with `sudo systemctl reboot`
         1. Make sure the Ethernet adapter on your host PC is **not** static. Plug an Ethernet cable to the ports on the Pi and your host PC. The host PC will be automatically assigned an IP address in the range `192.168.4.2-20` The Pi is accessible at either `server.softrobot` or `192.168.4.1`. Note, by default, the Ethernet adapter port is dynamic, but be sure to double check. 
           
