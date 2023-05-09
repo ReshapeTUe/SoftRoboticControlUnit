@@ -110,8 +110,7 @@ The enclosure makes the setup a nice square box. The CAD files are provided in t
         2. Assign a static IP address to the Pi's Ethernet `eth0` by adding these lines to the file `/etc/dhcpcd.conf`
 	```dotnetcli
 	interface eth0
-        static ip_address=192.168.4.1/24
-	```		
+        static ip_address=192.168.4.1/24```		
         3. Backup `/etc/dnsmasq.conf` and create a new file by typing:
 	```
         sudo mv /etc/dnsmasq.conf /etc/dnsmasq.conf.orig
