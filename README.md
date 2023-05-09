@@ -100,27 +100,31 @@ The enclosure makes the setup a nice square box. The CAD files are provided in t
         ```
 1. During first startup, create an account on the Pi. For purposes of this documentation, `user` is used as the username and `password` as password.     
 1. To connect the Pi to your host PC:	
-	1. In case you have a router that connects to the Pi and your host PC
-	
-    		a. Once powered up, connect the Raspberry pi using the ethernet cable to the router. 
-    		b. **On the host PC**, open a terminal and check the IP address of the ethernet connection by typing `ifconfig` (for Linux/OSX) or `ipconfig` (Windows) into the command terminal. Look for the line `eth0` or `enp5s0` or something similar and note the corresponding IP address (for example `192.168.1.123`). This is the IP address of the host PC.
-    		c. Find the IP address of the Pi by running `ifconfig` on the Pi's terminal. Look for the IP address with the same leading 3 triple digits (for example `192.168.1.321`). This is the IP address of the Pi. Now the Pi is accessible via SSH on this IP address.
+    1. In case you have a router that connects to the Pi and your host PC
+    	    a. Once powered up, connect the Raspberry pi using the ethernet cable to the router. 
+    	    b. **On the host PC**, open a terminal and check the IP address of the ethernet connection by typing `ifconfig` (for Linux/OSX) or `ipconfig` (Windows) into the command terminal. Look for the line `eth0` or `enp5s0` or something similar and note the corresponding IP address (for example `192.168.1.123`). This is the IP address of the host PC.
+    	    c. Find the IP address of the Pi by running `ifconfig` on the Pi's terminal. Look for the IP address with the same leading 3 triple digits (for example `192.168.1.321`). This is the IP address of the Pi. Now the Pi is accessible via SSH on this IP address.
     
-	1. In case you do not have a router and need to connect the Pi and the host PC **directly** using an ethernet cable, configure the Raspberry Pi as a DHCP server (can be done via SSH or with a monitor and a keyboard attached to the Pi)
+    1. In case you do not have a router and need to connect the Pi and the host PC **directly** using an ethernet cable, configure the Raspberry Pi as a DHCP server (can be done via SSH or with a monitor and a keyboard attached to the Pi)
 	
-        	a. Make sure the Pi has a working internet connection. Install `dnsmasq` by executing `sudo apt install dnsmasq`
-        	b. Assign a static IP address to the Pi's Ethernet `eth0` by adding these lines to the file `/etc/dhcpcd.conf`
-            		```dotnetcli
+            a. Make sure the Pi has a working internet connection. Install `dnsmasq` by executing `sudo apt install dnsmasq`
+            b. Assign a static IP address to the Pi's Ethernet `eth0` by adding these lines to the file `/etc/dhcpcd.conf`
+            		
+			```dotnetcli
             		interface eth0
                 	static ip_address=192.168.4.1/24
             		```
-        	c. Backup `/etc/dnsmasq.conf` and create a new file by typing:
-            		```dotnetcli
+			
+            c. Backup `/etc/dnsmasq.conf` and create a new file by typing:
+            		
+			```dotnetcli
             		sudo mv /etc/dnsmasq.conf /etc/dnsmasq.conf.orig
             		sudo nano /etc/dnsmasq.conf
             		```
-        	d. Add to the end of `/etc/dnsmasq.conf`
-            		```
+			
+            d. Add to the end of `/etc/dnsmasq.conf`
+            		
+			```
             		interface=eth0 # Listening interface
             		dhcp-range=192.168.4.2,192.168.4.20,255.255.255.0,24h
                         # Pool of IP addresses served via DHCP
@@ -128,8 +132,9 @@ The enclosure makes the setup a nice square box. The CAD files are provided in t
             		address=/server.softrobot/192.168.4.1
                         # Alias for this router
             		```
-        	e. Restart the services with `sudo systemctl reboot`
-        	f. Make sure the Ethernet adapter on your host PC is **not** static. Plug an Ethernet cable to the ports on the Pi and your host PC. The host PC will be automatically assigned an IP address in the range `192.168.4.2-20` The Pi is accessible at either `server.softrobot` or `192.168.4.1`. Note, by default, the Ethernet adapter port is dynamic, but be sure to double check. 
+			
+            e. Restart the services with `sudo systemctl reboot`
+            f. Make sure the Ethernet adapter on your host PC is **not** static. Plug an Ethernet cable to the ports on the Pi and your host PC. The host PC will be automatically assigned an IP address in the range `192.168.4.2-20` The Pi is accessible at either `server.softrobot` or `192.168.4.1`. Note, by default, the Ethernet adapter port is dynamic, but be sure to double check. 
           
           
 ### Additional Installations
