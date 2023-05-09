@@ -108,8 +108,10 @@ The enclosure makes the setup a nice square box. The CAD files are provided in t
     2. In case you do not have a router and need to connect the Pi and the host PC **directly** using an ethernet cable, configure the Raspberry Pi as a DHCP server (can be done via SSH or with a monitor and a keyboard attached to the Pi)
         1. Make sure the Pi has a working internet connection. Install `dnsmasq` by executing `sudo apt install dnsmasq`
         2. Assign a static IP address to the Pi's Ethernet `eth0` by adding these lines to the file `/etc/dhcpcd.conf`
-	```interface eth0
-        static ip_address=192.168.4.1/24```		
+	```dotnetcli
+	interface eth0
+        static ip_address=192.168.4.1/24
+	```		
         3. Backup `/etc/dnsmasq.conf` and create a new file by typing:
 	```
         sudo mv /etc/dnsmasq.conf /etc/dnsmasq.conf.orig
