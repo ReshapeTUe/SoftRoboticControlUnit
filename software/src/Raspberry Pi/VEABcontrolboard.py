@@ -12,7 +12,7 @@ class VeabSensor(baseSensor):
         # ADC Configuration
         ads.mode = Mode.CONTINUOUS
         ads.data_rate = RATE
-        ads.gain = 2
+        ads.gain = 1
         chan = AnalogIn(ads, ADS.P0)
         super().__init__(chan)
     def readSensor(self):
