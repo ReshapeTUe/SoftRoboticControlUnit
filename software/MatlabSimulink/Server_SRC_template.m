@@ -3,7 +3,7 @@ clear all; close all; clc;
 
 %Note: first run the Pi, then start this script. If you are running Unity,
 %start that last. To use the escape key to stop the script, you need to
-%install the Psychtoolbox from here: 
+%install the Psychtoolbox from here: http://psychtoolbox.org/download
 
 %%%%START INPUT SECTION
 
@@ -106,7 +106,7 @@ while (stop_flag==0)        %keeps looping as long as ESC key is not pressed
         %for the Pi
         
         %example of adressing individual channels
-        Pi_Out_Data(indexPiOut).("PresDes1")= 0.5+0.5*sin(Pi_Out_Data(index).time); 
+        Pi_Out_Data(indexPiOut).("PresDes1")= 0.5+0.5*sin(Pi_Out_Data(indexPiOut).time); 
         
 
         %example of how to loop through the header variables. If you use this option, double-check
