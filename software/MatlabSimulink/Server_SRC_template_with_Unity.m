@@ -3,7 +3,7 @@ clear all; close all; clc;
 
 %Note: first run the Pi, then start this script. If you are running Unity,
 %start that last. To use the escape key to stop the script, you need to
-%install the Psychtoolbox from here: 
+%install the Psychtoolbox from here: http://psychtoolbox.org/download
 
 %%%%START INPUT SECTION
 
