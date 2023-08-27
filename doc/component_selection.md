@@ -52,6 +52,7 @@ small packages, need 4 different devices for 4 different addresses
 Supports standard, fast-mode and high-speed I2C
 
 ## Opamp
-
+LM2902
+TLV2372 <  lower output on 0V in
 
 ## Power supplies
