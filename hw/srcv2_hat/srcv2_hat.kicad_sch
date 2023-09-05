@@ -144,11 +144,6 @@
     (uuid 7b751668-055a-44c8-95f8-4ea5b7a57586)
   )
 
-  (text "TODO:\nAdd RGB LED on GPIo of ADC\nAdd switch on GPIO of ADC\nConsider using different GPIO chiop, one stat is supported in linux\nConsideropamp with shutdown to get close to 0V"
-    (at 39.37 134.62 0)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid 01993156-5f38-4602-b8e6-064c080688a2)
-  )
   (text "Mechanical" (at 16.51 166.37 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid dbd45d46-c9fc-4758-97b2-bc0f2208ce44)
