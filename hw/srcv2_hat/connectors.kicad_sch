@@ -4,6 +4,11 @@
 
   (paper "A4")
 
+  (title_block
+    (title "Soft Robotics Control unit version 2")
+    (date "2023-09-06")
+  )
+
   (lib_symbols
     (symbol "Amplifier_Operational:LM2904" (pin_names (offset 0.127)) (in_bom yes) (on_board yes)
       (property "Reference" "U" (at 0 5.08 0)
@@ -1910,12 +1915,12 @@
   )
 
   (symbol (lib_id "Device:R") (at 53.34 83.82 90) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
+    (in_bom yes) (on_board yes) (dnp no)
     (uuid 3cc86e7c-e80c-4b6a-ab52-522bf4bd264d)
-    (property "Reference" "R41" (at 53.34 77.47 90)
+    (property "Reference" "R41" (at 52.07 86.36 90)
       (effects (font (size 1.27 1.27)))
     )
-    (property "Value" "1kOhm" (at 53.34 80.01 90)
+    (property "Value" "1kOhm" (at 53.34 88.9 90)
       (effects (font (size 1.27 1.27)))
     )
     (property "Footprint" "" (at 53.34 85.598 90)
@@ -2053,9 +2058,9 @@
     (property "Datasheet" "" (at 127 30.48 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "" (uuid 7bae534b-2f03-425a-b183-46b332c3608c))
-    (pin "" (uuid 7bae534b-2f03-425a-b183-46b332c3608c))
-    (pin "" (uuid 7bae534b-2f03-425a-b183-46b332c3608c))
+    (pin "" (uuid 7bae534b-2f03-425a-b183-46b332c3608e))
+    (pin "" (uuid 7bae534b-2f03-425a-b183-46b332c3608e))
+    (pin "" (uuid 7bae534b-2f03-425a-b183-46b332c3608e))
     (instances
       (project "srcv2_hat"
         (path "/8193c7b8-47ce-400b-b710-433fe4a50449/2f5c2e95-3dc6-4244-9403-12a5eddae25e"
@@ -2098,7 +2103,7 @@
     (property "Reference" "C17" (at 147.32 74.93 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
-    (property "Value" "100n" (at 147.32 77.47 0)
+    (property "Value" "100nF" (at 147.32 77.47 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Footprint" "" (at 144.4752 80.01 0)
@@ -2300,7 +2305,7 @@
     (property "Reference" "C11" (at 114.3 38.1 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
-    (property "Value" "100n" (at 114.3 40.64 0)
+    (property "Value" "100nF" (at 114.3 40.64 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Footprint" "" (at 111.4552 43.18 0)
@@ -2783,12 +2788,12 @@
   )
 
   (symbol (lib_id "Device:R") (at 41.91 88.9 0) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
+    (in_bom yes) (on_board yes) (dnp no)
     (uuid d47a9748-d225-42f6-b77c-11d705816024)
-    (property "Reference" "R40" (at 44.45 87.63 0)
+    (property "Reference" "R40" (at 36.83 87.63 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
-    (property "Value" "1kOhm" (at 44.45 90.17 0)
+    (property "Value" "1kOhm" (at 34.29 90.17 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Footprint" "" (at 40.132 88.9 90)

@@ -4,6 +4,11 @@
 
   (paper "A4")
 
+  (title_block
+    (title "Soft Robotics Control unit version 2")
+    (date "2023-09-06")
+  )
+
   (lib_symbols
     (symbol "Mechanical:MountingHole" (pin_names (offset 1.016)) (in_bom yes) (on_board yes)
       (property "Reference" "H" (at 0 5.08 0)

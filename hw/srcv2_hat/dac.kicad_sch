@@ -4,6 +4,11 @@
 
   (paper "A4")
 
+  (title_block
+    (title "Soft Robotics Control unit version 2")
+    (date "2023-09-06")
+  )
+
   (lib_symbols
     (symbol "Amplifier_Operational:LM2902" (pin_names (offset 0.127)) (in_bom yes) (on_board yes)
       (property "Reference" "U" (at 0 5.08 0)
@@ -1114,6 +1119,15 @@
   (text "100n should be close to supply pin" (at 31.75 128.27 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid 392cade9-aa60-4d68-94af-7a3dbdf7a21a)
+  )
+  (text "Gain is 4.905\nWith DAC output at 2.048 output will be 10.05V"
+    (at 143.51 17.78 0)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid 95b9c04b-7b6c-4736-82a8-f372592a2932)
+  )
+  (text "Address 0x60" (at 45.72 40.64 0)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid f5ef1c34-56c4-4cba-b4bc-8f1da5d40202)
   )
 
   (hierarchical_label "OUT4" (shape output) (at 190.5 151.13 0) (fields_autoplaced)
