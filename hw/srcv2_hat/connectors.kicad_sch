@@ -2080,9 +2080,9 @@
     (property "Datasheet" "" (at 127 30.48 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (pin "" (uuid 7bae534b-2f03-425a-b183-46b332c36090))
-    (pin "" (uuid 7bae534b-2f03-425a-b183-46b332c36090))
-    (pin "" (uuid 7bae534b-2f03-425a-b183-46b332c36090))
+    (pin "" (uuid 7bae534b-2f03-425a-b183-46b332c36092))
+    (pin "" (uuid 7bae534b-2f03-425a-b183-46b332c36092))
+    (pin "" (uuid 7bae534b-2f03-425a-b183-46b332c36092))
     (instances
       (project "srcv2_hat"
         (path "/8193c7b8-47ce-400b-b710-433fe4a50449/2f5c2e95-3dc6-4244-9403-12a5eddae25e"
