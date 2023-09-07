@@ -11,7 +11,7 @@ The input opamp has a voltage divider scaling down the 0-10V signal to 0-3.28.
 
 $$ {1370 \over 1370+2800} =  0.328$$
 
-The AC resolutioon will be
+The AC resolution will be:
 
 $$ {3.3 * {1 \over 0.328} \over 2^{12}} = 2.45mV/bit $$
 
@@ -20,7 +20,16 @@ Layout considerations have to be followed for this ADC. An example is in the dat
 
 ### input protection
  
+The input protection relies on a schottky diode pair clamping the voltage towards the +10V rail or GND. At +24V connected to the input, the current rhough the diode is limited by the 1kOhm resistor. The current when connected to +24V is calculated as follows:
 
+$$ I_{clamp} = { 12 \over 1000} = 12mA $$
+
+From the BAS40 datasheet we can read that the forward voltage at 12mA is just below 0.5V. This means that the voltage on the input of the opamp is limited at 10.5V.
+The max voltage on the DAC can be calculated using the gain from the previous section.
+
+$$ V_{adc_in} = { 10.5 * 0.328 } = 3.44V $$
+
+This is below the absolute maximum limit for the ADC (VDD + 0.3, so 3.6V).
 
 ## DAC
 For the DAC the internal reference of 2.048 (gain setting 1) is selected. LDAC is connected to ground. this causes the I2C input data to be transferred to the output on the last ACK pulse. RDY/BSY is not used and is left floating as recommended by the datasheet. The device requires a 0.1uF and 10uF capacitor on its supply bus, within 4mm of the device.
@@ -37,11 +46,10 @@ $${ 1070 \over 274 } + 1 = 4.905$$
 
 A set of clamping diodes is on each output. limiting the voltage on the opamp output and thus protecting that from an over current event. The current through the clamping diodes is limited by a series resistor. The max current through these clamping diodes in event of +24V being shorted to an output is calculated as follows.
 
-$$ V_{output_resistor} = {V_{output} - V_{diode} - V_{clamp_rail}}  = {24 - 0.6 - 12} = 11.4V $$
 
-$$ I_{output_resistor} = {V_{output_resistor} \over R_{output_resistor}}  = {11.4 \over 100} = 114mA$$
+$$ I_{output_resistor} = {V_{output_resistor} \over R_{output_resistor}}  = {12 \over 100} = 120mA$$
 
-This is within the acceptable range for the diodes. The limiting resistor will dissipate some amount of energy and has to be sized accordingly.
+This is within the acceptable range for the diodes. The limiting resistor will dissipate some amount of energy and has to be sized accordingly. BEcause of the low output impedance a short to +24V is only protected for 1 output simultaneously. When 2 or more outputs are shorted to GND it will exceed the current sinking capability of the +10V bus. 
 
 ## RGB LED
 The resistors for the LED are picked to provide some (but not perfect) color intensity matching. The currents have been matched to create similar light output for all colors.
@@ -82,7 +90,6 @@ $$ I_{blue} = {{3.3 - 12.9} \over 180} = 2.22mA $$
 
 
 
-
 ## Power LED
 
 Aimed for indication only, the current is around 1mA
@@ -99,11 +106,11 @@ $$ {{24 - 3 }\over 22000} = 0.95mA $$
 | Power LED | supply current | 1 | 1 | 1 | |
 |  |  |  |  |  | 1 |
 | LM7805 | supply current | 1 | 8 |  | |
-|  | Output current (12v) | 1 | 24.2 | 24.2 | |
-|  |  |  |  |  | 32.2 |
+|  | Output current (12v) | 1 | 25.8 | 25.8 | |
+|  |  |  |  |  | 33.8 |
 | VEAB | supply current | 4 | 42 | 167 | |
 |  |  |  |  |  | 167 |
-|  |  |  |  |  | **200.2** |
+|  |  |  |  |  | **201.8** |
 
 ### 12V rail
 
@@ -112,12 +119,17 @@ $$ {{24 - 3 }\over 22000} = 0.95mA $$
 | TLV2374 | supply current | 8 | 0.8 | 6.4 | |
 |  | Output current | 4 | 1 | 4 | |
 |  |  |  |  |  | 10.4 |
+| TLV2372 | supply current | 2 | 0.8 | 1.6 | |
+|  | Output current | 2 | negligible |  | |
+|  |  |  |  |  | 1.6|
 | TLV709 | supply current | 1 | negligible |  | |
 |  | Output current (3.3v) | 1 | 13.8 | 13.8 | |
 |  |  |  |  |  | 13.8 |
-|  |  |  |  |  | 6.93 |
-|  |  |  |  |  | **24.2** |
+|  |  |  |  |  | **25.8** |
 
+### 10V rail
+
+This voltage rail is ignored as it is not designed to draw any current. If there is current through this rail it is form an external source.
 
 ### 3.3V rail
 
@@ -134,7 +146,12 @@ $$ {{24 - 3 }\over 22000} = 0.95mA $$
 |  |  |  |  |  | 6.93 |
 |  |  |  |  |  | **13.8** |
 
-EEPROM is ignored here as it is powered from the Pi.
+
+EPROM is ignored here as it is powered from the Pi.
+
+## HAT EEPROM
+
+The HAT EEPROM is powered from the +3v3 from the Pi to ensure the device is alway available when the Pi is powered on. This is important because the content of it is used during boot. When the board is not powered by the +24V supply this detection may fail in future application.
 
 ## I2c pull-up
 Fairly strong pull-up of 1k have been selected for the I2C bus because of the 3.4MHz capabilities.
