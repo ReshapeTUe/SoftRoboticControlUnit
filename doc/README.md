@@ -2,4 +2,4 @@
 
 The page will contain quick references to important documents.
 
-[Component selection](component_selection.md)
+[Design info](design_info.md)
