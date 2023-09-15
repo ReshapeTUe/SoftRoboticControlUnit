@@ -31,6 +31,10 @@ $$ V_{adc_in} = { 10.5 * 0.328 } = 3.44V $$
 
 This is below the absolute maximum limit for the ADC (VDD + 0.3, so 3.6V).
 
+The power dissipation of this resistor is;
+
+$$ P = {U^2 \over R} = {12^2 / 1000} = 144mW $$
+
 ## DAC
 For the DAC the internal reference of 2.048 (gain setting 1) is selected. LDAC is connected to ground. this causes the I2C input data to be transferred to the output on the last ACK pulse. RDY/BSY is not used and is left floating as recommended by the datasheet. The device requires a 0.1uF and 10uF capacitor on its supply bus, within 4mm of the device.
 
@@ -42,14 +46,22 @@ Considering the E96 range, the selected resistor provide a gain of 4.905. Making
 
 $${ 1070 \over 274 } + 1 = 4.905$$
 
+The power dissipation of this resistor is;
+
+$$ P = {U^2 \over R} = {12^2 / 100} = 1.44W $$
+
 ### output protection
 
 A set of clamping diodes is on each output. limiting the voltage on the opamp output and thus protecting that from an over current event. The current through the clamping diodes is limited by a series resistor. The max current through these clamping diodes in event of +24V being shorted to an output is calculated as follows.
 
 
-$$ I_{output_resistor} = {V_{output_resistor} \over R_{output_resistor}}  = {12 \over 100} = 120mA$$
+$$ I_{output_resistor} = {V_{output_resistor} \over R_{output_resistor}}  = {12 \over 220} = 55mA$$
 
 This is within the acceptable range for the diodes. The limiting resistor will dissipate some amount of energy and has to be sized accordingly. BEcause of the low output impedance a short to +24V is only protected for 1 output simultaneously. When 2 or more outputs are shorted to GND it will exceed the current sinking capability of the +10V bus. 
+
+The power dissipation of this resistor is;
+
+$$ P = {U^2 \over R} = {12^2 / 220} = 655mW $$
 
 ## RGB LED
 The resistors for the LED are picked to provide some (but not perfect) color intensity matching. The currents have been matched to create similar light output for all colors.
@@ -127,9 +139,19 @@ $$ {{24 - 3 }\over 22000} = 0.95mA $$
 |  |  |  |  |  | 13.8 |
 |  |  |  |  |  | **25.8** |
 
+The power dissipation in the 12V regulator is:
+
+$$ p + { U * I } = {(24 - 12) * (0.0258 + 0.008)} = 0.4W $$
+
 ### 10V rail
 
 This voltage rail is ignored as it is not designed to draw any current. If there is current through this rail it is form an external source.
+
+The power dissipation in the 3.3V regulator is:
+
+$$ p + { U * I } = {10 * 0,055)} = 0.55W $$
+
+This opamp will become very how in case of a fault on the output. 
 
 ### 3.3V rail
 
@@ -147,6 +169,10 @@ This voltage rail is ignored as it is not designed to draw any current. If there
 |  |  |  |  |  | **13.8** |
 
 
+The power dissipation in the 3.3V regulator is:
+
+$$ p + { U * I } = {(12 - 3.3) * (0.0138 + 0.001)} = 129mW $$
+
 EPROM is ignored here as it is powered from the Pi.
 
 ## HAT EEPROM
@@ -154,7 +180,19 @@ EPROM is ignored here as it is powered from the Pi.
 The HAT EEPROM is powered from the +3v3 from the Pi to ensure the device is alway available when the Pi is powered on. This is important because the content of it is used during boot. When the board is not powered by the +24V supply this detection may fail in future application.
 
 ## I2c pull-up
-Fairly strong pull-up of 1k have been selected for the I2C bus because of the 3.4MHz capabilities.
+Fairly strong pull-up of 1k have been selected for the I2C bus because of the 3.4MHz capabilities. The power dissipated by the pull-up resistor is;
+
+$$ P = {U^2 \over R} = {3.3^2 / 1000} = 11mW $$
+
+## Power input filter
+
+An RC filter is placed on the +24V input before powering the analog power supplies. 
+
+$$ P = {I^2 * R} = {0.0338 * 10} = 11mW $$
+
+$$ U = { I * R } = {0.0338 * 10} = 0.338V $$
+
+
 
 ## I2C address overview
 | Device | Address |
