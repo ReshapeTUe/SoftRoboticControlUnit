@@ -1,3 +1,0 @@
-(sym_lib_table
-  (lib (name "Raspberry-Pi-Zero-W-rescue")(type "Legacy")(uri "${KIPRJMOD}/Raspberry Pi Zero W-rescue.lib")(options "")(descr ""))
-)
