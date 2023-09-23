@@ -30,7 +30,7 @@ class baseSoftRobot:
         print("TCP server is running. Waiting for client...")
         client, client_address = self.socket_TCP.accept()
         print("Client ",client_address," connected. Comm's ready!")
-        client.settimeout(0.5)
+        client.settimeout(5)
         self.clients.append(client)
         self.clients_addresses.append(client_address)
 
@@ -94,6 +94,10 @@ class baseSoftRobot:
     def waitForProcesses(self):
         for p in self.processes:
             p.join()
+
+    def cleanup(self):
+        self.clients = []
+        self.clients_addresses = []
 
 class baseSensor:
     def __init__(self, sensorInstance):

@@ -37,11 +37,13 @@ def main(argv):
     # exit()
     robot = SoftRobot(i2c=i2c,port=port)
     print(robot.nSensors," sensor(s) initialized")
-    robot.waitForClient() # Can be called many times to connect more clients
-    robot.createProcesses() # Initialize all the processes needed for I2C sensors, motors, TCP/IP comm
-    robot.run() # Start the processes
-    robot.waitForProcesses() # Wait for the processes to end
-    robot.socket_TCP.close()
+    while True:
+        robot.waitForClient() # Can be called many times to connect more clients
+        robot.createProcesses() # Initialize all the processes needed for I2C sensors, motors, TCP/IP comm
+        robot.run() # Start the processes
+        robot.waitForProcesses() # Wait for the processes to end
+        robot.cleanup()
+        robot.socket_TCP.close()
 
 if __name__ == "__main__":
     main(sys.argv[1:])
