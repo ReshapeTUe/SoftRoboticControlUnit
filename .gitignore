@@ -9,3 +9,4 @@
 *.autosave
 *.pyc
 venv*
+hardware/srcv2_hat/srcv2_hat-backups
