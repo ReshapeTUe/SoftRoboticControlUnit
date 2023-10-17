@@ -174,7 +174,9 @@
       "track_widths": [
         0.0,
         0.25,
-        0.4
+        0.4,
+        0.7,
+        1.0
       ],
       "via_dimensions": [
         {
@@ -460,6 +462,10 @@
       {
         "netclass": "Power",
         "pattern": "/rpi/3*"
+      },
+      {
+        "netclass": "Power",
+        "pattern": "GND"
       }
     ]
   },
