@@ -57,3 +57,12 @@ To improve this even further, each board would have to be calibrated or apply a 
 
 ## Festo regulators
 When testing with the Festo regulators all channels respond to the correct identifier. Note that the rush in current of these Festo module is significant. The curent limit for the power supply has to be above 500mA for 2 regulators to start.
+
+## TODO
+-check I2C channel 1 en 5
+-Check RC filter
+-Correct LED footprint
+-Correct J6
+-Measure 4 channel of 1 board, one channel of other boards
+-read/write eeprom
+-check i2c header
