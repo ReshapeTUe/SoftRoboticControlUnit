@@ -188,9 +188,11 @@ $$ P = {U^2 \over R} = {3.3^2 / 1000} = 11mW $$
 
 An RC filter is placed on the +24V input before powering the analog power supplies. 
 
-$$ P = {I^2 * R} = {0.0338 * 10} = 11mW $$
+$$ P = {I^2 * R} = {0.0338 * 100} = 110mW $$
 
-$$ U = { I * R } = {0.0338 * 10} = 0.338V $$
+$$ U = { I * R } = {0.0338 * 100} = 3.38V $$
+
+The resistor has to withstand current impulses up to a 24V short. While the capacitor charges, the resistor has to dissipate up to 6W.
 
 
 

@@ -60,9 +60,6 @@ When testing with the Festo regulators all channels respond to the correct ident
 
 ## TODO
 -check I2C channel 1 en 5
--Check RC filter
--Correct LED footprint
--Correct J6
 -Measure 4 channel of 1 board, one channel of other boards
 -read/write eeprom
 -check i2c header
