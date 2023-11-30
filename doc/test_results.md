@@ -59,6 +59,7 @@ To improve this even further, each board would have to be calibrated or apply a 
 When testing with the Festo regulators all channels respond to the correct identifier. Note that the rush in current of these Festo module is significant. The curent limit for the power supply has to be above 500mA for 2 regulators to start.
 
 ## TODO
--check I2C channel 5
 -read/write eeprom
+
+The EEPROM is connected to the ID I2C bus and as of now it is unclear how to access this from linux. Options to write this can be to access u-boot or to enable the correct i2c bus in linux. Which bus has to be enabled is unclear.
 
