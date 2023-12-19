@@ -4,31 +4,18 @@
 J2 and J3 share connection to the I2C bus the Pi. An EDS protection device is used for protecting the I2C lines.
 
 ## ADC
-The ADC reference voltage is equal to the AVDD supply (3.3V). The minimum capacity on the combined DVDD and AVDD lines is 220nF, 1uF has been selected.  The DECAP pin is connected to an 1uF capacitor as specified in the datasheet. The ADDR is settable using two resistors. By default these are not populated for an address of 0x10.
+The ADC reference voltage is from a voltage reference(3.3V). The minimum capacity on the DVDD and AVDD lines is 220nF, 1uF has been selected.  The DECAP pin is connected to an 1uF capacitor as specified in the datasheet. The ADDR is settable using two resistors. By default these are not populated for an address of 0x10.
 
 The input opamp has a voltage divider scaling down the 0-10V signal to 0-3.125. 
-
-
-$$ {1370 \over 1370+2800} =  0.328$$
 
 $$ {1000 \over 1000+2200} =  0.3125$$
 
 The AC resolution will be:
 
-$$ {3.3 * {1 \over 0.328} \over 2^{12}} = 2.45mV/bit $$
-
-$$ {3.3 * {1 \over 0.328} \over 2^{12}} = 2.45mV/bit $$
+$$ {3.3 * {1 \over 0.3125} \over 2^{12}} = 2.58mV/bit $$
 
 
-Layout considerations have to be followed for this ADC. An example is in the datasheet.
-
-Gain upper and lower limits:
-
-$$ {1370 * 1.01 \over (1370 * 1.01 + 2800 * 0.99)} =  0.333$$
-
-$$ {1370 * 0.99 \over (1370 * 0.99 + 2800 * 1.01)} =  0.324$$
-
-The resistor deviations can account for +- 1.5% error
+Layout considerations have to be followed for this ADC. An example is in the datasheet. The resistors used for the opamp will be of 0.1% tolerance.
 
 ### input protection
  
@@ -52,20 +39,9 @@ For the DAC the internal reference of 2.048 (gain setting 1) is selected. LDAC i
 
 The opamp stage after the DAC has a gain of ~5.
 Desired gain:
-$$ { 10 \over 2.048 } = 4.883 $$
-
 $$ { 10 \over 3.3 } = 3.03$$
 
-Considering the E96 range, the selected resistor provide a gain of 4.905. Making the maximum output voltage 10.04V. This option has been chosen to fullfil the 10V range completely.
-
-
-Considering the E96 range, the selected resistor provide a gain of 3.044. Making the maximum output voltage 10.04V. This option has been chosen to fullfil the 10V range completely.
-
-Considering the E96 range, the selected resistor provide a gain of 3.044. Making the maximum output voltage 10.56V. This option has been chosen to fullfil the 10V range completely.
-
-$${ 1070 \over 274 } + 1 = 4.905$$
-
-$${ 2800 \over 1370 } + 1 = 3.044$$
+Considering the E24 range, the selected resistor provide a gain of 3.2. Making the maximum output voltage 10.56V. This option has been chosen to fullfil the 10V range completely.
 
 $${ 2200 \over 1000 } + 1 = 3.2$$
 
@@ -73,13 +49,6 @@ The power dissipation of this resistor is;
 
 $$ P = {U^2 \over R} = {12^2 / 100} = 1.44W $$
 
-Gain upper and lower limits:
-
-$${ 1070 * 1.01 \over 274 * 0.99 } + 1 = 4.984$$
-
-$${ 1070 * 0.99 \over 274 * 1.01 } + 1 = 4.827$$
-
-The resistor deviations can account for +- 1.6% error
 
 ### output protection
 
