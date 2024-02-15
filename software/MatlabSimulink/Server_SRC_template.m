@@ -1,16 +1,15 @@
-%%Femke van Beek, 05-07-2021, Server code for Matlab-Unity communication%%
 clear all; close all; clc;
 
 %Note: first run the Pi, then start this script. If you are running Unity,
-%start that last. To use the escape key to stop the script, you need to
-%install the Psychtoolbox from here: http://psychtoolbox.org/download
+%start that last. Make sure that the matlab app to produce the stop button
+%(stop_button.mlapp) is in the same folder as this matlab script.
 
 %%%%START INPUT SECTION
 
 %%%Pi is client
 IP_address_client = '192.168.4.1';                                          %most Pi's have address 192.168.4.1
 Port_client = 12345;                                                        %Most Pi's use 12345
-PiFs=110;                                                                   %Hz of Pi communication. I usually put this about 10% higher than the frequency on the Pi, to account for some computation time on Matlab's side
+PiFs=100;                                                                   %Hz of Pi communication. I usually put this about 10% higher than the frequency on the Pi, to account for some computation time on Matlab's side
 
 %Define variable names of incoming and outgoing variables. Variable names are only internal to matlab, so choose whatever works for you.
 %The variable order is the order in which signals will be sent to the Pi.
@@ -40,7 +39,7 @@ Pressure.InScaling = "Actuator";                                            %Cho
 
 %Switches for plotting etc
 print_input = false;                                                        %set to true to display incoming data
-print_plot = false;                                                          %set to true to print a plot after finishing communication
+print_plot = true;                                                          %set to true to print a plot after finishing communication
 
 %%%%END INPUT SECTION%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Variable initialization. This probably doesn't have to change, so you can fold this
@@ -56,12 +55,9 @@ PiOutOn = ~isempty(PiOutHeader.Variable);
 
 countPiIn = 1;
 countPiOut = 1;
-PiBytesRead = [0];
+PiBytesRead = [0,0];
 PiBytesWritten = [0,0];
 stop_flag = 0;
-KbName('UnifyKeyNames');
-escapeKey = KbName('ESCAPE');
-spaceKey = KbName('SPACE');
 PiInStarted = false;
 
 if(PiInOn)
@@ -82,10 +78,13 @@ end
 tic
 
 %% START OF MAIN SECTION. Here, your custom code to generate signals can go
+%this line start the mapp with the stop button
+stop_button();
+
+stop_flag_from_app = 0;
 
 while (stop_flag==0)        %keeps looping as long as ESC key is not pressed
-[~,~, keyCode] = KbCheck();    
-   
+  
     %% Signal generation for Pi. For now, we just use a simple sine wave and send that to all channels. All signals here are scaled to the settings in Pressure. Commanding 0 here means actuatorMin, and 1 actuatorMax
     
     %The meaning of your signal depends on your settings in
@@ -106,7 +105,7 @@ while (stop_flag==0)        %keeps looping as long as ESC key is not pressed
         %for the Pi
         
         %example of adressing individual channels
-        Pi_Out_Data(indexPiOut).("PresDes1")= 0.5+0.5*sin(Pi_Out_Data(indexPiOut).time); 
+        Pi_Out_Data(indexPiOut).("PresDes0")= 0.5+0.5*sin(Pi_Out_Data(indexPiOut).time); 
         
 
         %example of how to loop through the header variables. If you use this option, double-check
@@ -134,16 +133,20 @@ while (stop_flag==0)        %keeps looping as long as ESC key is not pressed
        [Pi_In_Data,PiBytesRead,PiInStarted]  = ReadPiData(TCPClient, Pi_In_Data, PiInHeader, PiBytesRead,Pressure,PiInStarted);
 
     end
-    %% 
+    %%
     
-    if keyCode(escapeKey)
+    if(stop_flag_from_app==1)
+        disp("shutting down");
         stop_flag = 1;
         if(PiOutOn)
         SetPiToBaseline(TCPClient, PiOutHeader);
         pause(1);
         end
+
+        clear TCPClient
     end
-    
+
+
      %this sets the framerate to a fixed value. Make sure that this
      %frequency matches up with the code running on the Pi
      waitfor(frequencyControlObjectPi);   
