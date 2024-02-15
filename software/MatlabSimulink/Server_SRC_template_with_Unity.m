@@ -2,10 +2,23 @@
 clear all; close all; clc;
 
 %Note: first run the Pi, then start this script. If you are running Unity,
-%start that last. To use the escape key to stop the script, you need to
-%install the Psychtoolbox from here: http://psychtoolbox.org/download
+%start that last. For stopping, reverse the order: stop Unity, stop the
+%Matlab script, and the Pi will automatically stop when it detects that
+%Maltab stopped.
+
+%To use the escape key to stop the script, you need to
+%install the Psychtoolbox from here: http://psychtoolbox.org/download. Make
+%sure to carefully follow the installation instructions, and also install
+%the required 64-bit GStreamer. Once you get to installing Psychtoolbox
+%itself, follow the prompts in the matlab command window.
+
+%there are 2 options to stop the script. The escape key always works, but
+%if you set the time_based stop to true, then the script will automatically
+%stop running after the max_time is reached
 
 %%%%START INPUT SECTION
+time_based_stop = false;                                                    %set to true to enable time-based quitting of the loop
+max_time = 0;                                                               %maximum run time of script [s]
 
 %%%Pi is client
 IP_address_client = '192.168.4.1';                                          %most Pi's have address 192.168.4.1
@@ -13,49 +26,48 @@ Port_client = 12345;                                                        %Mos
 %%Unity is server
 IP_address_server = '127.0.0.1';                                            %If Unity is running on the same machine, this is 127.0.0.1
 Port_server = 26950;                                                        %User determined. Make sure that this matches up with the port in Unity
-PiFs=110;                                                                   %Hz of Pi communication. I usually put this about 10% higher than the frequency on the Pi, to account for some computation time on Matlab's side
+PiFs=110;                                                                   %Hz of Pi communication (and communication to Unity). I usually put this about 10% higher than the frequency on the Pi, to account for some computation time on Matlab's side
 
 %Define variable names of incoming and outgoing variables. Variable names are only internal to matlab, so choose whatever works for you.
 %The variable order is the order in which signals will be sent to the Pi.
 %Leave PiIn empty when you only want to actuate, and not sense data
 
 %Settings of data going out to Pi (data going from Matlab to Pi)
-PiOutHeaderOrig.Variable = ["PresDes0","VT"];                                 %actuators that you would like to control
-PiOutHeaderOrig.Channel = [3,1];                                              %i2c channels that your actuators use for communication
-PiOutHeaderOrig.VEAB = [1,0];                                                 %set to 1 for VEAB channels, and 0 for all other channels
-PiOutHeaderOrig.Baseline = [0.49,0];                                          %baseline values [with scaling set to None!] that should be sent out when nothing is happening, and when the program is closed. So 0=-5V, and 1=+5V. For regulators, this is normally 0.5 (or 0.49 to avoid leakage)
-PiOutHeaderOrig.StoringData = false;
+PiOutHeaderOrig.Variable = [];                                              %actuators that you would like to control
+PiOutHeaderOrig.Channel = [];                                               %i2c channels that your actuators use for communication
+PiOutHeaderOrig.VEAB = [];                                                  %set to 1 for VEAB channels, and 0 for all other channels
+PiOutHeaderOrig.Baseline = [];                                              %baseline values [with scaling set to None!] that should be sent out when nothing is happening, and when the program is closed. So 0=-5V, and 1=+5V. For regulators, this is normally 0.5 (or 0.49 to avoid leakage)
+PiOutHeaderOrig.StoringData = false;                                        %if true, this stores data on each time step in Pi_Out_data. If you don't care about this, turn it off for speed
 
 %Settings of data coming in from Pi (data going from Pi to Matlab)
-PiInHeaderOrig.Variable = ["PresDes0"];                                     %sensors that you would like to read data from. Leave empty if you don't have these
-PiInHeaderOrig.Channel = [3];                                               %i2c channels that your sensors use for communication
-PiInHeaderOrig.VEAB = [1];                                                  %set to 1 for automatic VEAB sensor scaling, and 0 for all other channels
-PiInHeaderOrig.StoringData = false;
+PiInHeaderOrig.Variable = [];                                               %sensors that you would like to read data from. Leave empty if you don't have these
+PiInHeaderOrig.Channel = [];                                                %i2c channels that your sensors use for communication
+PiInHeaderOrig.VEAB = [];                                                   %set to 1 for automatic VEAB sensor scaling, and 0 for all other channels
+PiInHeaderOrig.StoringData = false;                                         %if true, this stores data on each time step in Pi_In_data. If you don't care about this, turn it off for speed
 
 %settings of VEAB actuators. Make sure that actuator array lengths correspond with number of VEAB PiOutHeader variables
-Pressure.actuatorMin = [-2];                                                %Min relative pressure for actuators [kPa per actuator]
-Pressure.actuatorMax = [23];                                                %Max relative pressure for actuators [kPa per actuator]
-Pressure.regulatorMin = [-100];                                             %Min relative pressure output for regulators [kPa per regulator]
-Pressure.regulatorMax = [100];                                              %Max relative pressure output for regulators [kPa per regulator]
+Pressure.actuatorMin = [];                                                  %Min relative pressure for actuators [kPa per actuator]
+Pressure.actuatorMax = [];                                                  %Max relative pressure for actuators [kPa per actuator]
+Pressure.regulatorMin = [];                                                 %Min relative pressure output for regulators [kPa per regulator]
+Pressure.regulatorMax = [];                                                 %Max relative pressure output for regulators [kPa per regulator]
 Pressure.InVEABConversion = 1./16.89;                                       %value that VEAB sensor data needs to be multiplied by to get to proper matlab range. For the old boards, this is 1/10, for the new boards it's something like 1/16.67
-Pressure.OutScaling = "Actuator";                                           %Choose "Actuator" to normalize to actuator bounds (0 is min, 1 is max), "KPa" to scale to KPa, or "None" for directly showing Pi commands;
-Pressure.InScaling = "Actuator";                                            %Choose "Actuator" to normalize to actuator bounds (0 is min, 1 is max), "KPa" to scale to KPa, or "None" for directly showing Pi sensor data;
+Pressure.OutScaling = "Actuator";                                           %Choose "Actuator" to normalize to actuator bounds (0 represents minActuator, 1 represents maxActuator), "KPa" to scale to relative KPa, or "None" for directly showing Pi commands;
+Pressure.InScaling = "Actuator";                                            %Choose "Actuator" to show your data normalized to actuator bounds (0 represents ActuatorMin, 1 represents ActuatorMax), "KPa" to show as relative KPa, or "None" for directly showing Pi sensor data;
 
 %Settings of data coming in from Unity  (data going from Unity to Matlab)
-UnityInHeader.Variable = ["Pressure1","VT"];                                %variable name that you will use in rest of code
-UnityInHeader.StoringData = false;
+UnityInHeader.Variable = ["Pressure1"];                                     %variable name that you will use in rest of code
+UnityInHeader.StoringData = true;                                           %if true, this stores data on each time step in Unity_In_data. If you don't care about this, turn it off for speed
 
 %Settings of data going out to Unity (data going from Matlab to Unity)
-UnityOutHeader.Id = [];                                                    %ids that you want to see in your message
-UnityOutHeader.Variable = [];                                              %variable name that you will use in rest of code
-UnityOutHeader.StoringData = false;
+UnityOutHeader.Variable = ["Pressure1"];                                    %variable name that you will use in rest of code
+UnityOutHeader.StoringData = true;                                          %if true, this stores data on each time step in Unity_Out_data. If you don't care about this, turn it off for speed
 
 %Switches for plotting etc
 print_input = false;                                                        %set to true to display incoming data
-print_plot = false;                                                          %set to true to print a plot after finishing communication
+print_plot = true;                                                          %set to true to print a plot after finishing communication
 
 %%%%END INPUT SECTION%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Variable initialization. This probably doesn't have to change, so you can fold this
+%% Variable initialization. This doesn't have to change, so you can fold this
 % 
 %Initialize header structs
 [PiInHeader,PiInHeaderOrig,PiOutHeader,PiOutHeaderOrig,Pressure,UnityInHeader,UnityOutHeader] = initializeStructs(PiInHeaderOrig,PiOutHeaderOrig,Pressure,UnityInHeader,UnityOutHeader);
@@ -95,7 +107,7 @@ if(UnityInOn)
 end
 
 if(UnityOutOn)
-    Unity_Out_Data = InitializeArrays(UnityOutHeader);
+    Unity_Out_Data = InitializeArrays(UnityOutHeader);    
 end
 
 %start up TCP Server for Unity communication
@@ -103,13 +115,13 @@ if( UnityInOn || UnityOutOn)
     TCPServer = tcpserver(IP_address_server,Port_server);
     %configure callback to trigger when data comes in from Unity
     configureCallback(TCPServer,"byte",UnityInHeader.MessageLength,@(src,Header) readUnityData(src,UnityInHeader));
-    disp("Unity connected");
+    disp("Matlab server active for Unity communication");
 end
 
 %start up TCP Client for Pi communication
 if( PiInOn || PiOutOn)
     TCPClient = tcpclient(IP_address_client,Port_client);
-    disp("Pi connected");
+    disp("Matlab connected to Pi as a client");
 end
 
 %start timer
@@ -120,10 +132,16 @@ tic
 while (stop_flag==0)        %keeps looping as long as ESC key is not pressed
 [~,~, keyCode] = KbCheck();    
    
-    %% Signal generation for Pi. For now, we just use a simple sine wave and send that to all channels. All signals here are scaled to the settings in Pressure. Commanding 0 here means actuatorMin, and 1 actuatorMax
-    
-    %The meaning of your signal depends on your settings in
-    %"Pressure.OutScaling". Make sure to line that up.
+
+    %% Signal generation for Pi.
+    % In this section, you prepare the signal that you will send to the Pi in the next section.
+    % For now, we just use a simple sine wave and send that to all channels.
+    % Please note that currently we are not sending anything to the Pi, because
+    % PiOutOn=false, since PiOutHeaderOrig is empty
+    % All signals here are scaled to the OutScaling settings that you set for Pressure above. You have the following options:
+    % - Actuator: Commanding 0 here means actuatorMin, and 1 actuatorMax. Capped between 0 and 1;
+    % - kPa: relative pressure in kPa. Capped between -100 and +100
+    % - None: raw signal sent to Pi (will be converted to voltage by the Pi). Commanding 0 here means regulatorMin, and 1 means RegulatorMax. Capped between 0 and 1
 
    if(PiOutOn)
      
@@ -139,15 +157,15 @@ while (stop_flag==0)        %keeps looping as long as ESC key is not pressed
         %variable. For now, we are taking data coming from Unity as input
         %for the Pi
         
-        %example of adressing individual channels
-        %Pi_Out_Data(indexPiOut).("PresDes1")= 0.05*sin(Pi_Out_Data(index).time); 
+        %example of adressing individual channels. If there is data from
+        %Unity, we use this data to determine the Pi signals. If not, we
+        %make a time-based sine wave
         
-        if(isfield(TCPServer.UserData,'time'))
+        if(isfield(TCPServer.UserData,'time'))            
             Pi_Out_Data(indexPiOut).("PresDes0") = TCPServer.UserData(end).("Pressure1");
-            Pi_Out_Data(indexPiOut).("VT") = TCPServer.UserData(end).("VT");
         else
-            Pi_Out_Data(indexPiOut).("PresDes0") = 0;
-            Pi_Out_Data(indexPiOut).("VT") = 0;
+            Pi_Out_Data(indexPiOut).("PresDes1")= 0.05*sin(Pi_Out_Data(indexPiOut).time); 
+            %Pi_Out_Data(indexPiOut).("PresDes0") = 0;
         end
 
         %example of how to loop through the header variables. If you use this option, double-check
@@ -169,15 +187,56 @@ while (stop_flag==0)        %keeps looping as long as ESC key is not pressed
     end
 
     %% Read from Pi.
+    % Here the data is again automatically scaled according to your
+    % preferences chosen in the Pressure settings. Check 'Signal generation
+    % for Pi' for more info.
     
     if(PiInOn)
         
        [Pi_In_Data,PiBytesRead,PiInStarted]  = ReadPiData(TCPClient, Pi_In_Data, PiInHeader, PiBytesRead,Pressure,PiInStarted);
-
+       
     end
-    %% 
     
-    if keyCode(escapeKey)
+    %% Signal generation for Unity
+    % In this section, you generate the signal that you want to send to Unity. For now, we're sending a constant value.
+    % The code already has an if statement that enables basing your Unity input on the data coming from the Pi, you'll just have
+    % to customize it to your needs.
+    
+    if(UnityOutOn) 
+        
+        constant_output = 2.5;
+        
+        %determines if we store data in a variable
+        if(UnityOutHeader.StoringData==true)
+            indexUnityOut = length([Unity_Out_Data.time])+1; 
+        else
+            indexUnityOut = 1;
+        end
+        
+        Unity_Out_Data(indexUnityOut).time = toc;
+        
+        %here we either make a Pi-based signal, or we send a constant input
+        if(PiInOn && isfield(TCPClient.UserData,'time'))              %make signal based on Pi data, IF we have Pi data
+            Unity_Out_Data(indexUnityOut).("Pressure1") = TCPServer.UserData(end).("Pressure1");
+        else                                                %otherwise, do something default
+            Unity_Out_Data(indexUnityOut).("Pressure1") = constant_output;
+        end
+        
+    end
+    
+    %% Write to Unity
+    
+    if(UnityOutOn)
+        
+        if(TCPServer.Connected==1)
+                 [Unity_Out_Data,UnityBytesWritten] = WriteUnityData(TCPServer, Unity_Out_Data, UnityOutHeader, UnityBytesWritten);      
+        end
+    end
+
+
+    %% Catch escape key to get out of loop. 
+    
+    if keyCode(escapeKey) || (time_based_stop == true && toc > max_time)
         stop_flag = 1;
         if(PiOutOn)
         SetPiToBaseline(TCPClient, PiOutHeader);
@@ -185,9 +244,16 @@ while (stop_flag==0)        %keeps looping as long as ESC key is not pressed
         end
         clear TCPClient
         if(UnityInOn||UnityOutOn)
-           if(UnityInOn)
+            if(UnityInOn)
                Unity_In_Data = TCPServer.UserData;
-           end
+               UnityBytesRead = [Unity_In_Data.NumBytesRead];
+               Unity_In_Data = rmfield(Unity_In_Data,'NumBytesRead');
+            end
+           
+            if(UnityOutOn)
+               UnityBytesWritten = diff(UnityBytesWritten); 
+            end
+            
            clear TCPServer
         end
     end
@@ -223,13 +289,13 @@ if print_plot==true
 
 if(PiInOn)
     if(PiInHeader.StoringData==true)
-    plotData(Pi_In_Data,PiInHeaderOrig,"Received from Pi");
+    plotData(Pi_In_Data,PiInHeaderOrig,"Received from Pi",true);
     end
 end
 
 if(PiOutOn)
     if(PiOutHeader.StoringData==true)
-    plotData(Pi_Out_Data,PiOutHeaderOrig,"Sent to Pi");
+    plotData(Pi_Out_Data,PiOutHeaderOrig,"Sent to Pi",true);
     end
 end
 
@@ -254,13 +320,31 @@ if(PiInOn && PiOutOn)
     title("Desired vs measured data");
 end
 
-if(PiInOn && PiOutOn)
-figure()
-hold on
-p1=plot(PiBytesRead,'g:');
-p2=plot(PiBytesWritten,'b:');
-legend([p1,p2],{'Pi Bytes read','Pi bytes written'});
-title('Bytes communicated')
+if(UnityOutOn && UnityOutHeader.StoringData)
+    plotData(Unity_Out_Data,UnityOutHeader,"Outgoing data to Unity",false);
+end
+
+if(UnityInOn && UnityInHeader.StoringData)
+    plotData(Unity_In_Data,UnityInHeader,"Incoming data from Unity",false);
+end
+
+if(PiInOn || PiOutOn)
+    figure()
+    hold on
+    p1=plot(PiBytesRead,'g:');
+    p2=plot(PiBytesWritten,'b:');
+    legend([p1,p2],{'Pi Bytes read','Pi bytes written'});
+    title('Pi bytes communicated')
+end
+
+
+if(UnityInOn || UnityOutOn)
+    figure()
+    hold on
+    p1=plot(UnityBytesRead,'g:');
+    p2=plot(UnityBytesWritten,'b:');
+    legend([p1,p2],{'Unity Bytes read','Unity bytes written'});
+    title('Unity bytes communicated')
 end
 
 end
@@ -335,12 +419,9 @@ for VOut = 1:length(VEAB.OutUnique)
 end
 
 %Initialization Unity variables
-% UnityInHeader.UniqueIds=unique(UnityInHeader.Id,'stable');
-% for u=1:length(UnityInHeader.UniqueIds)
-%     UnityInHeader.UniqueIdNrs=sum(UnityInHeader.Id==UnityInHeader.UniqueIds(u));
-% end
 UnityInHeader.MessageLength = 8*length(UnityInHeader.Variable);
 
+UnityOutHeader.Id = zeros(1,length(UnityOutHeader.Variable));
 UnityOutHeader.UniqueIds=unique(UnityOutHeader.Id,'stable');
 for u=1:length(UnityOutHeader.UniqueIds)
     UnityOutHeader.UniqueIdNrs=sum(UnityOutHeader.Id==UnityOutHeader.UniqueIds(u));
@@ -364,9 +445,9 @@ end
 %     error("Your UnityInHeader variables do not all have the same length.")
 % end
 
-if~(length(UnityOutHeader.Id)==length(UnityOutHeader.Variable))
-    error("Your UnityOutHeader variables do not all have the same length.")
-end
+%  if~(length(UnityOutHeader.Id)==length(UnityOutHeader.Variable))
+%      error("Your UnityOutHeader variables do not all have the same length.")
+%  end
 
 end
 
@@ -492,11 +573,11 @@ function [Pi_Out_Data,PiBytesWritten] = WritePiData(ServerObject, Pi_Out_Data, P
                 %cut it down
                 if(data_temp_now(Id)>1)
                     data_temp_now(Id) = 1;
-                    disp('Data for variable %s is >1, resetting to 1',PiOutHeader.Variable(Id));
+                    fprintf('Data for variable %s exceeds max, resetting to max',PiOutHeader.Variable(Id));
                 end
                 if(data_temp_now(Id)<0)
                     data_temp_now(Id) = 0;
-                    disp('Data for variable %s is <0, resetting to 0',PiOutHeader.Variable(Id));
+                    fprintf('Data for variable %s is lower than minimum, resetting to minimum',PiOutHeader.Variable(Id));
                 end
                 
                 pressure_counter = pressure_counter+1;
@@ -548,6 +629,16 @@ function KPaToPi = KPaToPi(pressureFromMatlab, Pressure,id)
 
         RegulatorRange = Pressure.regulatorMax(id) - Pressure.regulatorMin(id);
 
+        if(pressureFromMatlab < Pressure.regulatorMin(id))
+            pressureFromMatlab = Pressure.regulatorMin(id);
+            fprintf('Commanded pressure is lower than minimum of regulator, resetting to minimum'); 
+        end
+        
+        if(pressureFromMatlab > Pressure.regulatorMax(id))
+            pressureFromMatlab =  Pressure.regulatorMax(id);
+           fprintf('Commanded pressure is higher than maximum of regulator, resetting to maximum');  
+        end
+        
         if(~isnan(pressureFromMatlab))
         KPaToPi = pressureFromMatlab/RegulatorRange + 0.5;
         else
@@ -559,6 +650,9 @@ function KPaToPi = KPaToPi(pressureFromMatlab, Pressure,id)
 end
 
 function readUnityData(src,Header)
+
+       numBytesAvailable = src.NumBytesAvailable;
+
        tempData = read(src, Header.MessageLength, "uint8");
        
        if(Header.StoringData==true)
@@ -572,24 +666,42 @@ function readUnityData(src,Header)
        end
 
        src.UserData(currentSize+1).time = toc;
-       
-%        %skip length message
-%        start_now = 4;
-%        counter = 1;
+       src.UserData(currentSize+1).NumBytesRead = numBytesAvailable;
+
        for u=1:length(Header.Variable)
-%            %skip id message 
-%            start_now = start_now+4;
-%             for l=1:Header.UniqueIdNrs(u)
                 src.UserData(currentSize+1).(Header.Variable(u)) = typecast(uint8(tempData((u-1)*8+1:u*8)),'double');
-%                 %move to next variable
-%                 start_now = start_now + 8;
-%                 counter = counter + 1;
-       %     end
        end
 
- end
+end
 
-function plotData(Data,Header,label)
+function [Unity_Out_Data,UnityBytesWritten] = WriteUnityData(ServerObject, Unity_Out_Data, Header, UnityBytesWritten)
+
+            DesiredIds=unique(Header.Id,'stable');
+            data_temp_now=[];
+       
+            %this is an overly complicated way of doing this with all kinds
+            %of Ids that don't do anything for now. But it's a pain to
+            %rewrite the Unity receive script, so for now we leave it as is
+               for Id = 1:length(DesiredIds)
+                    currentMessageNrs = find(Header.Id==DesiredIds(Id));
+                    data_temp_now = [data_temp_now,DesiredIds(Id),0,0,0];
+                    data_temp_now = [data_temp_now,length(currentMessageNrs),0,0,0];
+                    for Mes = 1: length(Header.Variable)
+                        current_variable=Header.Variable(Mes);                     
+                        current_data = Unity_Out_Data(end).(current_variable);
+                        data_temp_now = [data_temp_now,typecast(current_data,'uint8')];
+                    end
+               end
+
+                data_temp_now = typecast([length(data_temp_now),0,0,0,data_temp_now],'uint8');
+                
+                write(ServerObject,data_temp_now,'uint8');
+            
+            UnityBytesWritten(end+1) = ServerObject.NumBytesWritten;
+            
+end 
+
+function plotData(Data,Header,label,isPi)
 
     figure()
     hold on
@@ -598,12 +710,16 @@ function plotData(Data,Header,label)
     end
     legend(Header.Variable)
     xlabel('Time [s]');
-    if(Header.Scaling=="Actuator")
-        ylabel('Pressure normalized to actuator');
-    elseif(Header.Scaling=="KPa")
-        ylabel('Pressure [KPa]');  
-    elseif(Header.Scaling=="None")
-        ylabel('Pressure normalized to Pi');
+    if(isPi)
+        if(Header.Scaling=="Actuator")
+            ylabel('Pressure normalized to actuator');
+        elseif(Header.Scaling=="KPa")
+            ylabel('Pressure [KPa]');  
+        elseif(Header.Scaling=="None")
+            ylabel('Pressure normalized to Pi');
+        end
+    else
+        ylabel('Data');
     end
     title(label);
 
