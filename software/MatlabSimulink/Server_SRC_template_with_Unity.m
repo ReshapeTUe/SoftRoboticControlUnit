@@ -4,21 +4,9 @@ clear all; close all; clc;
 %Note: first run the Pi, then start this script. If you are running Unity,
 %start that last. For stopping, reverse the order: stop Unity, stop the
 %Matlab script, and the Pi will automatically stop when it detects that
-%Maltab stopped.
-
-%To use the escape key to stop the script, you need to
-%install the Psychtoolbox from here: http://psychtoolbox.org/download. Make
-%sure to carefully follow the installation instructions, and also install
-%the required 64-bit GStreamer. Once you get to installing Psychtoolbox
-%itself, follow the prompts in the matlab command window.
-
-%there are 2 options to stop the script. The escape key always works, but
-%if you set the time_based stop to true, then the script will automatically
-%stop running after the max_time is reached
+%Matlab stopped.
 
 %%%%START INPUT SECTION
-time_based_stop = false;                                                    %set to true to enable time-based quitting of the loop
-max_time = 0;                                                               %maximum run time of script [s]
 
 %%%Pi is client
 IP_address_client = '192.168.4.1';                                          %most Pi's have address 192.168.4.1
@@ -129,10 +117,11 @@ tic
 
 %% START OF MAIN SECTION. Here, your custom code to generate signals can go
 
-while (stop_flag==0)        %keeps looping as long as ESC key is not pressed
-[~,~, keyCode] = KbCheck();    
-   
+%this line start the mapp with the stop button
+stop_button();
+stop_flag_from_app = 0;
 
+while (stop_flag==0)        %keeps looping as long as ESC key is not pressed
     %% Signal generation for Pi.
     % In this section, you prepare the signal that you will send to the Pi in the next section.
     % For now, we just use a simple sine wave and send that to all channels.
@@ -234,15 +223,18 @@ while (stop_flag==0)        %keeps looping as long as ESC key is not pressed
     end
 
 
-    %% Catch escape key to get out of loop. 
+    %% Catch stop button press to get out of loop. 
     
-    if keyCode(escapeKey) || (time_based_stop == true && toc > max_time)
+    if (stop_flag_from_app==1)
+        disp("shutting down");
         stop_flag = 1;
         if(PiOutOn)
-        SetPiToBaseline(TCPClient, PiOutHeader);
-        pause(1);
+            SetPiToBaseline(TCPClient, PiOutHeader);
+            pause(1);
         end
+
         clear TCPClient
+        
         if(UnityInOn||UnityOutOn)
             if(UnityInOn)
                Unity_In_Data = TCPServer.UserData;

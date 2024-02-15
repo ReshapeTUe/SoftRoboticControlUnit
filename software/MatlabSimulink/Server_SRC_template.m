@@ -1,8 +1,8 @@
 clear all; close all; clc;
 
-%Note: first run the Pi, then start this script. If you are running Unity,
-%start that last. Make sure that the matlab app to produce the stop button
-%(stop_button.mlapp) is in the same folder as this matlab script.
+%Note: first run the Pi, then start this script. Make sure that the matlab app to produce the stop button
+%(stop_button.mlapp) is in the same folder as this matlab script. To stop
+%the script, press the stop button, and the Pi will automatically stop too.
 
 %%%%START INPUT SECTION
 
@@ -78,9 +78,9 @@ end
 tic
 
 %% START OF MAIN SECTION. Here, your custom code to generate signals can go
+
 %this line start the mapp with the stop button
 stop_button();
-
 stop_flag_from_app = 0;
 
 while (stop_flag==0)        %keeps looping as long as ESC key is not pressed
@@ -133,14 +133,14 @@ while (stop_flag==0)        %keeps looping as long as ESC key is not pressed
        [Pi_In_Data,PiBytesRead,PiInStarted]  = ReadPiData(TCPClient, Pi_In_Data, PiInHeader, PiBytesRead,Pressure,PiInStarted);
 
     end
-    %%
+    %% Catch stop button press to get out of loop. 
     
     if(stop_flag_from_app==1)
         disp("shutting down");
         stop_flag = 1;
         if(PiOutOn)
-        SetPiToBaseline(TCPClient, PiOutHeader);
-        pause(1);
+            SetPiToBaseline(TCPClient, PiOutHeader);
+            pause(1);
         end
 
         clear TCPClient
