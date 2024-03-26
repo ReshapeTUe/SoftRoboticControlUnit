@@ -69,12 +69,16 @@ The setup has some commercially available and some custom-made componenets. Belo
 ## Electronic Hardware Assembly
 (Add pictures) For a minimal working setup:
 
-1. Stack the VEAB control board on top of the Raspberry Pi
-2. Plug a Raspberry Pi OS loaded micro-SD card (See [Initial setup](#initial-setup)) into the Pi
-3. Connect the 12V power line and the Festo cables to the VEAB control board
-4. Connect the pneumatic tubes to the Festo regulators, the air compressor and the vacuum pump (see diagram)
-5. Power on the Pi by plugging in the Pi's power supply
-6. Power on the whole system by turning on the 12V power supply
+1. Stack the VEAB control board on top of the Raspberry Pi.
+2. Plug a micro-SD card loaded with Raspberry Pi OS (See [Initial setup](#initial-setup)) into the Pi.
+3. Connect the 12V power line and the Festo cables to the VEAB control board. Do not supply 12V power yet.
+4. Connect the pneumatic tubes to the Festo regulators (see diagram).
+ 4.1. Connect the air compressor to pressure port 1 of the Festo regulators.
+ 4.2. For negative pressure tasks, connect the vacuum pump to pressure port 3 of the Festo regulators; otherwise, leave it open to the atmosphere.
+ 4.3. Connect the output pressure port 2 to the desired actuator.
+6. Power on the Pi by plugging in the Pi's power supply.
+7. Establish an SSH connection with the Pi through a command prompt. Use the appropriate login credentials of the Pi to log in.
+8. Only power on the whole system by turning on the 12V power supply after establishing an SSH connection.
 
 ## Enclosure Assembly
 The enclosure makes the setup a nice square box. The CAD files are provided in the `hardware/enclosure/` folder
@@ -215,6 +219,26 @@ The VEAB control board has two analog-to-digital converters and two digital-to-a
 The VEAB board is the intermediary between the Pi and the Festo regulators. The VEAB control board uses I2C to communicate with the Raspberry Pi. It can be either on top of the Pi or connected to the Pi via a QWIIC cable. The two four-pin ports in the middle of the board should be connected to Festo cables with a female end. The two-pin port next to the Festo ports is the 12V power supply port. A guide to reproduce the VEAB control board can be found in `/hardware/Hardware.md`
 
 # Software Documentation
+
+"Every SRC setup (built after March 2024) has a dedicated directory with the original Python code. If there is a need to change the Python code, it is highly recommended to create a local copy of the Python code with desired changes. Create a new Directory on Pi using mkdir command. Visual Studio Code is recommended to implement desired changes. For ease in file transfer between the Pi and a Windows, follow the steps below.
+
+## Transfer files between Pi and Windows
+
+### Pi to Windows
+
+Use PSCP (PuTTY Secure Copy Protocol) to transfer an entire directory from the Pi to Windows. Launch a new Command Prompt on Windows.
+
+'''
+pscp -r pi@ipaddress:"source directory on Pi/*" "destination directory on windown"
+'''
+
+### Windows to Pi
+
+Use PSCP (PuTTY Secure Copy Protocol) to transfer an entire directory from Windows to the Pi. Launch a new Command Prompt on Windows.
+
+'''
+pscp -r "source directory on windown\*" pi@ipaddress:"destination directory on Pi"
+'''
 
 ## Python
 
