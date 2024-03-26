@@ -220,7 +220,7 @@ The VEAB board is the intermediary between the Pi and the Festo regulators. The 
 
 # Software Documentation
 
-"Every SRC setup (built after March 2024) has a dedicated directory with the original Python code. If there is a need to change the Python code, it is highly recommended to create a local copy of the Python code with desired changes. Create a new Directory on Pi using mkdir command. Visual Studio Code is recommended to implement desired changes. For ease in file transfer between the Pi and a Windows, follow the steps below.
+Every SRC setup (built after March 2024) has a dedicated directory with the original Python code. If there is a need to change the Python code, it is highly recommended to create a local copy of the Python code with desired changes. Create a new Directory on Pi using mkdir command. Visual Studio Code is recommended to implement desired changes. For ease in file transfer between the Pi and a Windows, follow the steps below.
 
 ## Transfer files between Pi and Windows
 
