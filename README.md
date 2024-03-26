@@ -73,9 +73,9 @@ The setup has some commercially available and some custom-made componenets. Belo
 2. Plug a micro-SD card loaded with Raspberry Pi OS (See [Initial setup](#initial-setup)) into the Pi.
 3. Connect the 12V power line and the Festo cables to the VEAB control board. Do not supply 12V power yet.
 4. Connect the pneumatic tubes to the Festo regulators (see diagram).
- 4.1. Connect the air compressor to pressure port 1 of the Festo regulators.
- 4.2. For negative pressure tasks, connect the vacuum pump to pressure port 3 of the Festo regulators; otherwise, leave it open to the atmosphere.
- 4.3. Connect the output pressure port 2 to the desired actuator.
+  - Connect the air compressor to pressure port 1 of the Festo regulators.
+  - For negative pressure tasks, connect the vacuum pump to pressure port 3 of the Festo regulators; otherwise, leave it open to the atmosphere.
+  - Connect the output pressure port 2 to the desired actuator.
 6. Power on the Pi by plugging in the Pi's power supply.
 7. Establish an SSH connection with the Pi through a command prompt. Use the appropriate login credentials of the Pi to log in.
 8. Only power on the whole system by turning on the 12V power supply after establishing an SSH connection.
@@ -228,17 +228,16 @@ The VEAB board is the intermediary between the Pi and the Festo regulators. The 
 
 Use PSCP (PuTTY Secure Copy Protocol) to transfer an entire directory from the Pi to Windows. Launch a new Command Prompt on Windows.
 
-'''
+``` 
 pscp -r pi@ipaddress:"source directory on Pi/*" "destination directory on windown"
-'''
-
+```
 ### Windows to Pi
 
 Use PSCP (PuTTY Secure Copy Protocol) to transfer an entire directory from Windows to the Pi. Launch a new Command Prompt on Windows.
 
-'''
+```
 pscp -r "source directory on windown\*" pi@ipaddress:"destination directory on Pi"
-'''
+```
 
 ## Python
 
