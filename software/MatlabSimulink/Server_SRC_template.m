@@ -83,7 +83,7 @@ tic
 stop_button();
 stop_flag_from_app = 0;
 
-while (stop_flag==0)        %keeps looping as long as ESC key is not pressed
+while (stop_flag==0)        %keeps looping as long as Stop button on the stop_button() is pressed
   
     %% Signal generation for Pi. For now, we just use a simple sine wave and send that to all channels. All signals here are scaled to the settings in Pressure. Commanding 0 here means actuatorMin, and 1 actuatorMax
     
@@ -363,7 +363,7 @@ function [DataStorage, BytesRead,PiInStarted] = ReadPiData(ServerObject, DataSto
                                 data_temp_now_normalized = pressureToActuator(data_temp_now_mes,Pressure,id);
                             elseif(Pressure.InScaling == "KPa")
                                 %TODO implement scaling to KPa
-                                data_temp_now_normalized = pressureToKPa(data_temp_now_mes,Pressure);
+                                data_temp_now_normalized = pressureToKPa(data_temp_now_mes,Pressure,id);
                             elseif(Pressure.InScaling == "None")
                                 data_temp_now_normalized = data_temp_now_mes;  
                             else
