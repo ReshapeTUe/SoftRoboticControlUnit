@@ -6,7 +6,7 @@ import numpy as np
 from VEABcontrolboard import VEABcontrolboard
 
 class SoftRobot(baseSoftRobot):
-    def __init__(self,i2c=[1],sensorFreq = 250,actuatorFreq = 250,port = 8888):
+    def __init__(self,i2c=[1],sensorFreq = 100,actuatorFreq = 100,port = 8888):
         self.IMUadded = False
         self.port = port
         # self.nSensors = len(i2c)
