@@ -77,9 +77,6 @@ PiBytesWritten = [0,0];
 UnityBytesRead = [0];
 UnityBytesWritten = [0,0];
 stop_flag = 0;
-KbName('UnifyKeyNames');
-escapeKey = KbName('ESCAPE');
-spaceKey = KbName('SPACE');
 PiInStarted = false;
 
 if(PiInOn)
@@ -118,10 +115,10 @@ tic
 %% START OF MAIN SECTION. Here, your custom code to generate signals can go
 
 %this line start the mapp with the stop button
-stop_button();
-stop_flag_from_app = 0;
+AppInstance = stop_button();
+%stop_flag_from_app = 0;
 
-while (stop_flag==0)        %keeps looping as long as ESC key is not pressed
+while (stop_flag==0)        %keeps looping as long as the stop button on the stop_button() GUI is not pressed.
     %% Signal generation for Pi.
     % In this section, you prepare the signal that you will send to the Pi in the next section.
     % For now, we just use a simple sine wave and send that to all channels.
@@ -225,7 +222,7 @@ while (stop_flag==0)        %keeps looping as long as ESC key is not pressed
 
     %% Catch stop button press to get out of loop. 
     
-    if (stop_flag_from_app==1)
+    if (AppInstance.stop_flag_from_app==1)
         disp("shutting down");
         stop_flag = 1;
         if(PiOutOn)
@@ -502,7 +499,7 @@ function [DataStorage, BytesRead,PiInStarted] = ReadPiData(ServerObject, DataSto
                                 data_temp_now_normalized = pressureToActuator(data_temp_now_mes,Pressure,id);
                             elseif(Pressure.InScaling == "KPa")
                                 %TODO implement scaling to KPa
-                                data_temp_now_normalized = pressureToKPa(data_temp_now_mes,Pressure);
+                                data_temp_now_normalized = pressureToKPa(data_temp_now_mes,Pressure,id);
                             elseif(Pressure.InScaling == "None")
                                 data_temp_now_normalized = data_temp_now_mes;  
                             else
