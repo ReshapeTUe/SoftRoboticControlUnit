@@ -80,10 +80,10 @@ tic
 %% START OF MAIN SECTION. Here, your custom code to generate signals can go
 
 %this line start the mapp with the stop button
-stop_button();
-stop_flag_from_app = 0;
+AppInstance = stop_button();
+%stop_flag_from_app = 0;
 
-while (stop_flag==0)        %keeps looping as long as Stop button on the stop_button() is pressed
+while (stop_flag==0)        %keeps looping as long as Stop button on the stop_button() is not pressed
   
     %% Signal generation for Pi. For now, we just use a simple sine wave and send that to all channels. All signals here are scaled to the settings in Pressure. Commanding 0 here means actuatorMin, and 1 actuatorMax
     
@@ -135,7 +135,7 @@ while (stop_flag==0)        %keeps looping as long as Stop button on the stop_bu
     end
     %% Catch stop button press to get out of loop. 
     
-    if(stop_flag_from_app==1)
+    if(AppInstance.stop_flag_from_app==1)
         disp("shutting down");
         stop_flag = 1;
         if(PiOutOn)
