@@ -3,7 +3,7 @@ from robot_Festo  import SoftRobot
 import numpy as np
 
 def usage():
-    print('Usage:\ntestFesto.py -i <[I2C channels]> -p <Port>\nOr\ntestFesto.py\nNow exiting...')
+    print('Usage:\npython3 runrobot_Festo.py -i <[I2C channels]> -p <Port>\nOr\ntestFesto.py\nNow exiting...')
 
 def main(argv):
     try:
@@ -19,7 +19,7 @@ def main(argv):
     else:
         for opt, arg in opts:
             if opt in ("-h", "--help"):
-                print('testFesto.py -i <[I2C channels]> -p <Port>\nOr\ntestFesto.py')
+                print('python3 runrobot_Festo.py -i <[I2C channels]> -p <Port>\nOr\ntestFesto.py')
                 sys.exit()
                 
             elif opt in ("-i", "--i2c"):
