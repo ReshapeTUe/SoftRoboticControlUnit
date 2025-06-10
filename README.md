@@ -103,7 +103,7 @@ The enclosure makes the setup stackable. STL files are provided in the `hardware
 ### Matlab / Simulink setup
 
 1. Install Matlab and Simulink
-1. Install `Simulink Support Package for Raspberry Pi Hardware' add-on
+1. Install `Simulink Support Package for Raspberry Pi Hardware` add-on
 1. Setup Raspberry Pi hardware
 
 ## First use
@@ -113,12 +113,12 @@ The enclosure makes the setup stackable. STL files are provided in the `hardware
 # Hardware Documentation 
 
 ## VEAB control board V2
-The VEAB control board V2 has four analog-to-digital converters and four digital-to-analog converters to control the Festo regulators and to read the internal sensor of the regulators. The fabrication of the board is documented in a separate file in the `hardware' folder. 
-The VEAB board is the intermediary between the Pi and the Festo regulators. It is stacked on top of the Pi. Four industrial connectors on the edge of the board connect to Festo regulators via standard industrial sensor cables. A barrel connector is the 24V power supply port. The VEAB control board uses I2C to communicate with the Raspberry Pi. The used I2C bus (i.e., the Raspberry Pi's I2C-1, -3, -4, -5, or -6) is selectable with a jumper, and on the selected bus two additional I2C connectors are available (QWIIC and 4-pin header) for optional additional sensors. A guide to reproduce the VEAB control board can be found in `/hardware/Hardware.md' (TO DO)
+The VEAB control board V2 has four analog-to-digital converters and four digital-to-analog converters to control the Festo regulators and to read the internal sensor of the regulators. The fabrication of the board is documented in a separate file in the `hardware` folder. 
+The VEAB board is the intermediary between the Pi and the Festo regulators. It is stacked on top of the Pi. Four industrial connectors on the edge of the board connect to Festo regulators via standard industrial sensor cables. A barrel connector is the 24V power supply port. The VEAB control board uses I2C to communicate with the Raspberry Pi. The used I2C bus (i.e., the Raspberry Pi's I2C-1, -3, -4, -5, or -6) is selectable with a jumper, and on the selected bus two additional I2C connectors are available (QWIIC and 4-pin header) for optional additional sensors. A guide to reproduce the VEAB control board can be found in `/hardware/Hardware.md` (TO DO)
 
 # Software Documentation
-1. The system uses Simulink and its `Simulink Support Package for Raspberry Pi Hardware' add-on to generate code that is deployed to the Pi.
-    1. When running in `External mode' (`Monbitor & Tune'), there is communication between Simulink and Pi using the XCP protocol. In that mode, parameters can be changed from Simulink while the code is running on the Pi, and data is sent back to Simulink.
+1. The system uses Simulink and its `Simulink Support Package for Raspberry Pi Hardware` add-on to generate code that is deployed to the Pi.
+    1. When running in 'External mode` (`Monbitor & Tune`), there is communication between Simulink and Pi using the XCP protocol. In that mode, parameters can be changed from Simulink while the code is running on the Pi, and data is sent back to Simulink.
 1. A Simulink device driver block makes the four inputs and outputs available. The block wraps c-code that handles the low-level I2C-communication.
 
 ## Simulink
