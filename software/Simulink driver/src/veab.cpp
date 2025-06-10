@@ -1,0 +1,333 @@
+#include <iostream>
+#include <string>
+#include <sys/ioctl.h>
+#include <unistd.h>
+#include <linux/i2c-dev.h>
+#include <fcntl.h>
+#include "veab.h"
+
+void setAllVeab(uint8_t bus, uint8_t channel, double value1, double value2, double value3, double value4, double resolution)
+{
+    if (value1 < 0.0) value1 = 0.0;
+    if (value1 > 10.0) value1 = 10.0;
+
+    if (value2 < 0.0) value2 = 0.0;
+    if (value2 > 10.0) value2 = 10.0;
+
+    if (value3 < 0.0) value3 = 0.0;
+    if (value3 > 10.0) value3 = 10.0;
+
+    if (value4 < 0.0) value4 = 0.0;
+    if (value4 > 10.0) value4 = 10.0;
+
+    const unsigned int dacValue[4] = {value1 / resolution, value2 / resolution, value3 / resolution, value4 / resolution}; // we lose up to 2.45 mV here, but thats okay
+
+    std::cout << "setVeab called with bus: " << unsigned(bus) << " channel: " << unsigned(channel) << " value: " << value1 << ", " << value2 << ", " << value3 << ", " << value4  << " res: " << resolution << std::endl;
+
+    int file;
+    char filename[20];
+
+    snprintf(filename, 19, "/dev/i2c-%d", bus);
+    
+    for(int i = 0; i < 20; i++){
+        file = open(filename, O_RDWR);
+        if (file < 0) {
+            std::cout << "opening " << filename << " failed" << std::endl;
+            //exit(1);
+        } else{
+            break;
+        }
+    }
+
+    if (ioctl(file, I2C_SLAVE, 0x60) < 0) {
+        std::cout << "opening device on address 0x60 failed" << std::endl;
+        exit(1);
+    }
+
+ /*   char buf[9];
+
+    buf[0] = 0x50;
+    //buf[0] = 0x40;
+    buf[1] = 0x00 + ((dacValue[0] >> 8) & 0xF);
+    buf[2] = dacValue[0] & 0xFF;
+
+    buf[3] = 0x00 + ((dacValue[1] >> 8) & 0xF);
+    buf[4] = dacValue[1] & 0xFF;
+
+    buf[5] = 0x00 + ((dacValue[2] >> 8) & 0xF);
+    buf[6] = dacValue[2] & 0xFF;
+
+    buf[7] = 0x00 + ((dacValue[3] >> 8) & 0xF);
+    buf[8] = dacValue[3] & 0xFF;
+      
+    if (write(file, buf, 9) != 9) {
+        std::cout << "Writing to device failed" << std::endl;
+        exit(1);
+    }
+
+     buf[0] = 0x08;
+    if (write(file, buf, 1) != 1) {
+        std::cout << "Writing to device failed" << std::endl;
+        exit(1);
+    }*/
+
+        char buf[3];
+for(int i=0; i < 4 ; i++){
+    buf[0] = 0x40 + ((i) << 1);
+    buf[1] = 0x00 + ((dacValue[i] >> 8) & 0xF);
+    buf[2] = dacValue[i] & 0xFF;
+      
+    if (write(file, buf, 3) != 3) {
+        std::cout << "Writing to device failed" << std::endl;
+        exit(1);
+    }
+}
+
+    close(file);
+
+}
+
+
+void setVeab(uint8_t bus, uint8_t channel, double value, double resolution)
+{
+    if (value < 0.0) value = 0.0;
+    if (value > 10.0) value = 10.0;
+    //const float resolution = 0.002578125; // 2.45mV/bit, from design doc
+    const unsigned int dacValue = value / resolution; // we lose up to 2.45 mV here, but thats okay
+
+    std::cout << "setVeab called with bus: " << unsigned(bus) << " channel: " << unsigned(channel) << " value: " << value  << " res: " << resolution << std::endl;
+
+    int file;
+    char filename[20];
+
+    snprintf(filename, 19, "/dev/i2c-%d", bus);
+    
+    for(int i = 0; i < 20; i++){
+        file = open(filename, O_RDWR);
+        if (file < 0) {
+            std::cout << "opening " << filename << " failed" << std::endl;
+            //exit(1);
+        } else{
+            break;
+        }
+    }
+
+    if (ioctl(file, I2C_SLAVE, 0x60) < 0) {
+        std::cout << "opening device on address 0x60 failed" << std::endl;
+        exit(1);
+    }
+
+    char buf[3];
+
+    buf[0] = 0x40 + ((channel - 1) << 1);
+    buf[1] = 0x00 + ((dacValue >> 8) & 0xF);
+    buf[2] = dacValue & 0xFF;
+      
+    if (write(file, buf, 3) != 3) {
+        std::cout << "Writing to device failed" << std::endl;
+        exit(1);
+    }
+
+    close(file);
+
+}
+
+void setupAdc(uint8_t bus){
+    int file;
+    char filename[20];
+
+   snprintf(filename, 19, "/dev/i2c-%d", bus);
+    file = open(filename, O_RDWR);
+    if (file < 0) {
+        std::cout << "opening " << filename << " failed" << std::endl;
+        exit(1);
+    }
+
+    if (ioctl(file, I2C_SLAVE, 0x10) < 0) {
+        std::cout << "opening device on address 0x10 failed" << std::endl;
+        exit(1);
+    }
+
+    char buf[3];
+
+    // setting the IO correct, first 4 analog inputs
+    buf[0] = 0x08;
+    buf[1] = 0x05;
+    buf[2] = 0xF0;
+
+    if (write(file, buf, 3) != 3) {
+        std::cout << "Writing IO config failed" << std::endl;
+        exit(1);
+    }
+
+     // auto channel select
+    buf[0] = 0x08;
+    buf[1] = 0x12;
+    buf[2] = 0x0F;
+
+    if (write(file, buf, 3) != 3) {
+        std::cout << "Writing IO config failed" << std::endl;
+        exit(1);
+    }
+
+    // enable seq sampling mode
+    buf[0] = 0x08;
+    buf[1] = 0x10;
+    buf[2] = 0x11;
+
+    if (write(file, buf, 3) != 3) {
+        std::cout << "Writing IO config failed" << std::endl;
+        exit(1);
+    }
+
+    // enable channel data in answer
+    buf[0] = 0x08;
+    buf[1] = 0x02;
+    buf[2] = 0x10;
+
+    if (write(file, buf, 3) != 3) {
+        std::cout << "Writing IO config failed" << std::endl;
+        exit(1);
+    }
+    close(file);
+
+}
+
+void getAllVeab(uint8_t bus, double resolution, double* in1, double* in2, double* in3, double* in4 )
+{
+    //const float resolution = 0.002578125; // 2.45mV/bit, from design doc
+    
+    double adcResult = 0.0;
+    int file;
+    char filename[20];
+
+    //std::cout << "getVeab called with bus: " << unsigned(bus) << " channel: " << unsigned(channel) << " res: " << resolution;
+
+    snprintf(filename, 19, "/dev/i2c-%d", bus);
+    file = open(filename, O_RDWR);
+    if (file < 0) {
+        std::cout << "opening " << filename << " failed" << std::endl;
+        exit(1);
+    }
+
+    if (ioctl(file, I2C_SLAVE, 0x10) < 0) {
+        std::cout << "opening device on address 0x10 failed" << std::endl;
+        exit(1);
+    }
+
+    char buf[3];
+
+
+    
+    for(int i=0; i < 4 ; i++){
+        unsigned int adcReadValue = 0;
+
+        if (read(file, buf, 2) != 2) {
+            std::cout << "Read channel sample failed" << std::endl;
+            exit(1);
+        }
+        
+        // bits 15-4 contain the data        
+        adcReadValue = buf[0];
+        adcReadValue <<= 4;
+        adcReadValue |= (buf[1] >> 4) & 0xF;
+        int channelAnswer = buf[1] & 0x0F;
+
+         std::cout << "Got " << adcReadValue * resolution << "For channel " << channelAnswer << std::endl;
+        
+        switch(channelAnswer)
+        {
+            case 0:
+                *in1 = adcReadValue * resolution;   
+            break;
+            case 1:
+                *in2 = adcReadValue * resolution;   
+            break;
+            case 2:
+                *in3 = adcReadValue * resolution;   
+            break;
+            case 3:
+                *in4 = adcReadValue * resolution;   
+            break;
+            default:
+            std::cout << "error" << std::endl;
+            break;
+        }
+    }
+    close(file);
+}
+
+uint32_t getVeab(uint8_t bus, uint8_t channel, double resolution )
+{
+    //const float resolution = 0.002578125; // 2.45mV/bit, from design doc
+    unsigned int adcReadValue = 0;
+    double adcResult = 0.0;
+    int file;
+    char filename[20];
+
+    std::cout << "getVeab called with bus: " << unsigned(bus) << " channel: " << unsigned(channel) << " res: " << resolution;
+
+    snprintf(filename, 19, "/dev/i2c-%d", bus);
+    file = open(filename, O_RDWR);
+    if (file < 0) {
+        std::cout << "opening " << filename << " failed" << std::endl;
+        exit(1);
+    }
+
+    if (ioctl(file, I2C_SLAVE, 0x10) < 0) {
+        std::cout << "opening device on address 0x10 failed" << std::endl;
+        exit(1);
+    }
+
+    char buf[3];
+
+    // setting the IO correct, first 4 analog inputs
+    buf[0] = 0x08;
+    buf[1] = 0x05;
+    buf[2] = 0xF0;
+
+    if (write(file, buf, 3) != 3) {
+        std::cout << "Writing IO config failed" << std::endl;
+        exit(1);
+    }
+
+    buf[0] = 0x08;
+    buf[1] = 0x11;
+    buf[2] = channel - 1;
+
+    if (write(file, buf, 3) != 3) {
+        std::cout << "Writing next channel failed" << std::endl;
+        exit(1);
+    }
+
+    if (read(file, buf, 2) != 2) {
+        std::cout << "Read channel sample failef" << std::endl;
+        exit(1);
+    }
+
+    // bits 15-4 contain the data
+
+    adcReadValue = buf[0];
+    adcReadValue <<= 4;
+    adcReadValue |= (buf[1] >> 4) & 0xF;
+
+    adcResult = adcReadValue * resolution;
+
+    if (adcResult < 0.0) adcResult = 0.0;
+    if (adcResult > 10.0) adcResult = 10.0;
+
+    std::cout << " value: " << adcResult  << std::endl;
+
+    close(file);
+
+    return (uint32_t)(adcResult * 1000.0);
+    //std::cout << std::setprecision(3) << adcResult << std::endl;
+
+
+}
+
+uint32_t test_f(){
+    uint32_t r = 123456;
+    std::cout << "about to return " << r << std::endl;
+    return r;
+}
